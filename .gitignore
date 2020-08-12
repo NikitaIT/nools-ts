@@ -1,5 +1,8 @@
 /.vscode/
 /dist/
-/node_modules/
+node_modules
 yarn.lock
 coverage
+.idea
+lib
+*.tsbuildinfo

@@ -1,0 +1,22 @@
+{
+	"name": "@nools/parser",
+	"version": "2.3.8",
+	"description": "nools in TypeScript.",
+	"main": "./lib/parser.js",
+	"types": "./lib/parser.d.ts",
+	"scripts": {
+		"build": "tsc -b . && node ./lib/grammar",
+		"start": "tsc -w --preserveWatchOutput"
+	},
+	"keywords": [
+		"nools"
+	],
+	"license": "MIT",
+	"dependencies": {
+		"jison": "0.4.18"
+	},
+	"devDependencies": {
+		"typescript": "3.9.7",
+		"@types/node": "14.0.27"
+	}
+}

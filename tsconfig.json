@@ -1,75 +1,33 @@
 {
-	"exclude": [
-		"./dist/"
-	],
-	"include": [
-		"./src/**/*.ts"
-	],
-	"compileOnSave": false,
-	"compilerOptions": {
-		"module": "commonjs",
-		"target": "esnext",
-		"noImplicitAny": true,
-		"sourceMap": false,
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
-		"strictNullChecks": false,
-		"noImplicitThis": true,
-		"rootDir": "./src/",
-		"rootDirs": [],
-		"allowJs": false,
-		"allowUnreachableCode": false,
-		"allowUnusedLabels": false,
-		"alwaysStrict": true,
-		"baseUrl": "",
-		"charset": "utf8",
-		"declaration": true,
-		// "declarationDir": "./dts/",
-		"inlineSourceMap": false,
-		"allowSyntheticDefaultImports": false,
-		"diagnostics": false,
-		"emitBOM": false,
-		"forceConsistentCasingInFileNames": false,
-		"importHelpers": false,
-		"inlineSources": false,
-		"isolatedModules": false,
-		"lib": [
-			"esnext",
-			"dom"
-		],
-		"listFiles": false,
-		"listEmittedFiles": false,
-		"locale": "zh_CN",
-		"newLine": "lf",
-		"noEmit": false,
-		"moduleResolution": "node",
-		"noEmitHelpers": false,
-		"noEmitOnError": false,
-		"noImplicitReturns": false,
-		"noImplicitUseStrict": false,
-		"maxNodeModuleJsDepth": 0,
-		"noLib": false,
-		"outDir": "./dist",
-		"noFallthroughCasesInSwitch": false,
-		"noResolve": false,
-		"noUnusedLocals": false,
-		"noUnusedParameters": false,
-		"paths": {},
-		"preserveConstEnums": false,
-		"pretty": true,
-		"removeComments": false,
-		"skipDefaultLibCheck": true,
-		"skipLibCheck": true,
-		"stripInternal": false,
-		"suppressExcessPropertyErrors": false,
-		"suppressImplicitAnyIndexErrors": true,
-		"traceResolution": false,
-		"typeRoots": [
-			// "./node_modules/@types/"
-		],
-		"types": [
-			"node"
-		],
-		"watch": false
-	}
+  "include": ["packages"],
+  "exclude": ["node_modules", "dist", "lib", "__tests__", "tests", "**/*.test*", "**/*.spec*"],
+  "files":  [],
+  "compilerOptions": {
+    "skipLibCheck": false,
+
+    "strict": true,
+    "jsx": "react",
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "rootDir": "./",
+    "baseUrl": "./",
+    "paths": {
+      "@nools/*": ["packages/*/src"]
+    },
+    // https://github.com/RyanCavanaugh/learn-a/#tsconfigsettingsjson
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "incremental": true,
+    "lib": ["esnext"]
+  },
+  "references": [
+    { "path": "packages/common" },
+    { "path": "packages/parser" },
+    { "path": "packages/nools" },
+    { "path": "packages/data-structures" }
+  ]
 }

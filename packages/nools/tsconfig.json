@@ -1,0 +1,14 @@
+{
+  "include": ["src"],
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src",
+    "paths": {}
+  },
+  "references": [
+    { "path": "../common" },
+    { "path": "../parser" },
+    { "path": "../data-structures" }
+  ]
+}

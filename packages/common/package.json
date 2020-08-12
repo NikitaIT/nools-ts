@@ -1,0 +1,17 @@
+{
+	"name": "@nools/common",
+	"version": "0.0.1",
+	"description": "common nools types",
+	"main": "index.d.ts",
+	"scripts": {
+	},
+	"keywords": [
+		"nools"
+	],
+	"license": "MIT",
+	"devDependencies": {
+		"typescript": "3.9.7"
+	},
+	"dependencies": {
+	}
+}

@@ -1,15 +1,15 @@
-const nools = require('../dist/');
-const c = require('../dist/compile');
-const rt = require('../dist/runtime');
+const nools = require("../src/");
+const c = require("../src/compile");
+const rt = require("../src/runtime");
 
 // const { should } = require('chai');
 // should();
 // require('should');
 
-describe('hello world', () => {
-	let r;
-	before(() => {
-		const rule = `
+describe("hello world", () => {
+  let r;
+  before(() => {
+    const rule = `
 		//find any message that starts with hello
 		rule Hello {
 			when {
@@ -32,28 +32,28 @@ describe('hello world', () => {
 		}
 		`;
 
-		const defines = new Map();
-		const scope = new Map();
+    const defines = new Map();
+    const scope = new Map();
 
-		class Message {
-			constructor(message) {
-				this.text = message;
-			}
-		}
+    class Message {
+      constructor(message) {
+        this.text = message;
+      }
+    }
 
-		defines.set('message', Message);
-		defines.set('Message', Message);
+    defines.set("message", Message);
+    defines.set("Message", Message);
 
-		const j = c.compile(rule, {
-			name: 'test',
-			define: defines,
-			scope: scope
-		});
-		const s = JSON.stringify(j);
-		r = JSON.parse(s);
-	});
-	it('basic', async () => {
-		const rule = `
+    const j = c.compile(rule, {
+      name: "test",
+      define: defines,
+      scope: scope,
+    });
+    const s = JSON.stringify(j);
+    r = JSON.parse(s);
+  });
+  it("basic", async () => {
+    const rule = `
 	//find any message that starts with hello
 	rule Hello {
 		when {
@@ -76,70 +76,70 @@ describe('hello world', () => {
 	}
 	`;
 
-		const defines = new Map();
-		const scope = new Map();
+    const defines = new Map();
+    const scope = new Map();
 
-		class Message {
-			constructor(message) {
-				this.text = message;
-			}
-		}
+    class Message {
+      constructor(message) {
+        this.text = message;
+      }
+    }
 
-		defines.set('message', Message);
-		defines.set('Message', Message);
+    defines.set("message", Message);
+    defines.set("Message", Message);
 
-		const flow = nools.compile(rule, {
-			name: 'test',
-			define: defines,
-			scope: scope
-		});
-		const m = new Message('hello world');
-		const session = flow.getSession(m);
-		await session.match();
-		m.text.should.equal('hello world goodbye')
-		session.dispose();
-	});
-	it('use json', async () => {
-		const defines = new Map();
-		const scope = new Map();
+    const flow = nools.compile(rule, {
+      name: "test",
+      define: defines,
+      scope: scope,
+    });
+    const m = new Message("hello world");
+    const session = flow.getSession(m);
+    await session.match();
+    m.text.should.equal("hello world goodbye");
+    session.dispose();
+  });
+  it("use json", async () => {
+    const defines = new Map();
+    const scope = new Map();
 
-		class Message {
-			constructor(message) {
-				this.text = message;
-			}
-		}
+    class Message {
+      constructor(message) {
+        this.text = message;
+      }
+    }
 
-		defines.set('message', Message);
-		defines.set('Message', Message);
-		const flow = rt.compile(r, {
-			name: 'test',
-			define: defines,
-			scope: scope
-		});
-		const m = new Message('hello world');
-		const session = flow.getSession(m);
-		await session.match();
-		m.text.should.equal('hello world goodbye')
-		session.dispose();
-	});
-	it('use object as scope and defines', async () => {
-		const scope = new Map();
+    defines.set("message", Message);
+    defines.set("Message", Message);
+    const flow = rt.compile(r, {
+      name: "test",
+      define: defines,
+      scope: scope,
+    });
+    const m = new Message("hello world");
+    const session = flow.getSession(m);
+    await session.match();
+    m.text.should.equal("hello world goodbye");
+    session.dispose();
+  });
+  it("use object as scope and defines", async () => {
+    const scope = new Map();
 
-		class Message {
-			constructor(message) {
-				this.text = message;
-			}
-		}
+    class Message {
+      constructor(message) {
+        this.text = message;
+      }
+    }
 
-		const flow = rt.compile(r, {
-			name: 'test',
-			define: { Message },
-			scope: scope
-		});
-		const m = new Message('hello world');
-		const session = flow.getSession(m);
-		await session.match();
-		m.text.should.equal('hello world goodbye')
-		session.dispose();
-	});
+    const flow = rt.compile(r, {
+      name: "test",
+      define: { Message },
+      scope: scope,
+    });
+    const m = new Message("hello world");
+    const session = flow.getSession(m);
+    await session.match();
+    m.text.should.equal("hello world goodbye");
+    session.dispose();
+  });
 });

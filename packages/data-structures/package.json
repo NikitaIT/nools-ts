@@ -1,0 +1,20 @@
+{
+	"name": "@nools/data-structures",
+	"version": "0.0.1",
+	"description": "nools data-structures",
+	"main": "./lib/index.js",
+	"types": "./lib/index.d.ts",
+	"scripts": {
+		"build": "tsc -b .",
+		"start": "tsc -w --preserveWatchOutput"
+	},
+	"keywords": [
+		"nools"
+	],
+	"license": "MIT",
+	"devDependencies": {
+		"typescript": "3.9.7"
+	},
+	"dependencies": {
+	}
+}
