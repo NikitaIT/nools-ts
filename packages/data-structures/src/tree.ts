@@ -1,5 +1,5 @@
 function compare(a: number, b: number) {
-  let ret = 0;
+  const ret = 0;
   if (a > b) {
     return 1;
   } else if (a < b) {
@@ -45,11 +45,13 @@ export class Tree<T> {
   protected setRoot(root: ITreeNode<T> | null) {
     this.__root = root;
   }
-  insert(data: T) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  insert(data: T): void {
     throw new Error("Not Implemented");
   }
 
-  remove(data: T) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  remove(data: T): void {
     throw new Error("Not Implemented");
   }
 
@@ -69,7 +71,7 @@ export class Tree<T> {
    * @param node node to print
    * @param level the current level the node is at, Used for formatting
    */
-  __printNode(node?: ITreeNode<T> | null, level: number = 0) {
+  __printNode(node?: ITreeNode<T> | null, level = 0) {
     //console.log(level);
     const str: string[] = [];
     if (isNotUndefinedOrNull(node)) {
@@ -95,11 +97,7 @@ export class Tree<T> {
     });
   }
 
-  traverse(
-    node: ITreeNode<T> | null | undefined,
-    order: Order = Order.PRE,
-    callback: (data: T) => void
-  ) {
+  traverse(node: ITreeNode<T> | null | undefined, order: Order = Order.PRE, callback: (data: T) => void) {
     if (!node) {
       return;
     }
@@ -125,7 +123,7 @@ export class Tree<T> {
   traverseWithCondition(
     node: ITreeNode<T> | null | undefined,
     order: Order = Order.PRE,
-    callback: (data: T) => boolean
+    callback: (data: T) => boolean,
   ): boolean {
     let cont = true;
     if (node) {
@@ -231,24 +229,14 @@ export class Tree<T> {
   }
 
   reduce(
-    fun: (
-      previousValue: T,
-      currentValue: T,
-      currentIndex: number,
-      array: T[]
-    ) => T,
+    fun: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T,
     accumulator?: T,
-    order?: Order
+    order?: Order,
   ): T;
   reduce<U>(
-    fun: (
-      previousValue: U,
-      currentValue: T,
-      currentIndex: number,
-      array: T[]
-    ) => U,
+    fun: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U,
     accumulator?: U,
-    order?: Order
+    order?: Order,
   ): U;
   reduce(fun: any, accumulator: any, order: Order) {
     const arr = this.toArray(order);
@@ -256,25 +244,15 @@ export class Tree<T> {
   }
 
   reduceRight(
-    fun: (
-      previousValue: T,
-      currentValue: T,
-      currentIndex: number,
-      array: T[]
-    ) => T,
+    fun: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T,
     accumulator?: T,
-    order?: Order
+    order?: Order,
   ): T;
 
   reduceRight<U>(
-    fun: (
-      previousValue: U,
-      currentValue: T,
-      currentIndex: number,
-      array: T[]
-    ) => T,
+    fun: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => T,
     accumulator?: U,
-    order?: Order
+    order?: Order,
   ): U;
   reduceRight(fun: any, accumulator: any, order: Order) {
     const arr = this.toArray(order);

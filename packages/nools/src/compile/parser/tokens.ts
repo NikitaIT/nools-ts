@@ -12,17 +12,11 @@ import * as utils from "./util";
 import { Keywords, parse } from "./parse";
 
 const predicates = ["not", "or", "exists"];
-const predicateRegExp = new RegExp(
-  "^(" + predicates.join("|") + ") *\\((.*)\\)$",
-  "m"
-);
-const predicateBeginExp = new RegExp(
-  " *(" + predicates.join("|") + ") *\\(",
-  "g"
-);
+const predicateRegExp = new RegExp("^(" + predicates.join("|") + ") *\\((.*)\\)$", "m");
+const predicateBeginExp = new RegExp(" *(" + predicates.join("|") + ") *\\(", "g");
 
 function isWhiteSpace(str: string) {
-  return str.replace(/[\s|\n|\r|\t]/g, "").length === 0;
+  return str.replace(/[\s\n\r\t]/g, "").length === 0;
 }
 
 function joinFunc(m: string, str: string) {
@@ -58,27 +52,16 @@ const autoFocusRegexp = /^(auto-focus|autoFocus)\s*:\s*(true|false)\s*[,;]?/;
 
 const ruleRegExp = /^(\$?\w+) *: *(\w+)(.*)/;
 
-const constraintRegExp = /(\{ *(?:["']?\$?\w+["']?\s*:\s*["']?\$?\w+["']? *(?:, *["']?\$?\w+["']?\s*:\s*["']?\$?\w+["']?)*)+ *\})/;
+const constraintRegExp = /({ *(?:["']?\$?\w+["']?\s*:\s*["']?\$?\w+["']? *(?:, *["']?\$?\w+["']?\s*:\s*["']?\$?\w+["']?)*)+ *})/;
 const fromRegExp = /(\bfrom\s+.*)/;
 function parseRules(str: string) {
-  const constraints: (
-    | ISimpleConstraint
-    | INomalConstraint
-    | INotConstraint
-    | IFromstraint
-    | IOrConstraint
-  )[] = [];
+  const constraints: (ISimpleConstraint | INomalConstraint | INotConstraint | IFromstraint | IOrConstraint)[] = [];
   const ruleLines = str.split(";"),
     l = ruleLines.length;
   let ruleLine: string;
-  for (
-    let i = 0;
-    i < l &&
-    (ruleLine = ruleLines[i].replace(/^\s*|\s*$/g, "").replace(/\n/g, ""));
-    i++
-  ) {
+  for (let i = 0; i < l && (ruleLine = ruleLines[i].replace(/^\s*|\s*$/g, "").replace(/\n/g, "")); i++) {
     if (!isWhiteSpace(ruleLine)) {
-      let constraint = ([] as unknown) as
+      const constraint = ([] as unknown) as
         | ISimpleConstraint
         | INomalConstraint
         | INotConstraint
@@ -88,9 +71,7 @@ function parseRules(str: string) {
         // "not", "or", "exists"
         const m = ruleLine.match(predicateRegExp);
         if (!m) {
-          throw new SyntaxError(
-            `RuleLine: "${ruleLine}", not match: ${predicates}`
-          );
+          throw new SyntaxError(`RuleLine: "${ruleLine}", not match: ${predicates}`);
         }
         const pred = m[1].replace(/^\s*|\s*$/g, "");
         (constraint as IOrConstraint).push(pred);
@@ -98,8 +79,8 @@ function parseRules(str: string) {
         if (pred === "or") {
           constraints.push(
             (constraint as IOrConstraint).concat(
-              parseRules(splitRuleLineByPredicateExpressions(ruleLine))
-            ) as IOrConstraint
+              parseRules(splitRuleLineByPredicateExpressions(ruleLine)),
+            ) as IOrConstraint,
           );
           continue;
         }
@@ -116,34 +97,24 @@ function parseRules(str: string) {
           if (fromRegExp.test(_constraint)) {
             const fromMatch = _constraint.match(fromRegExp);
             if (!fromMatch) {
-              throw new SyntaxError(
-                `RuleLine: "${ruleLine}" in constraint: "${_constraint}", not match: "from"`
-              );
+              throw new SyntaxError(`RuleLine: "${ruleLine}" in constraint: "${_constraint}", not match: "from"`);
             }
             frm = fromMatch[0];
             _constraint = _constraint.replace(fromMatch[0], "");
           }
           if (_constraint) {
-            (constraint as ISimpleConstraint).push(
-              _constraint.replace(/^\s*|\s*$/g, "")
-            );
+            (constraint as ISimpleConstraint).push(_constraint.replace(/^\s*|\s*$/g, ""));
           }
           if (hash) {
             (constraint as ISimpleConstraint).push(
-              eval(
-                "(" +
-                  hash.replace(/(\$?\w+)\s*:\s*(\$?\w+)/g, '"$1" : "$2"') +
-                  ")"
-              )
+              eval("(" + hash.replace(/(\$?\w+)\s*:\s*(\$?\w+)/g, '"$1" : "$2"') + ")"),
             );
           }
         } else if (_constraints && !isWhiteSpace(_constraints)) {
           if (fromRegExp.test(_constraints)) {
             const fromMatch = _constraints.match(fromRegExp);
             if (!fromMatch) {
-              throw new SyntaxError(
-                `RuleLine: "${ruleLine}" in constraints: "${_constraints}", not match: "from"`
-              );
+              throw new SyntaxError(`RuleLine: "${ruleLine}" in constraints: "${_constraints}", not match: "from"`);
             }
             frm = fromMatch[0];
             _constraints = _constraints.replace(fromMatch[0], "");
@@ -184,10 +155,7 @@ function agendaGroup(src: string, context: IRuleContext) {
     const parts = src.match(agendaGroupRegexp)!,
       agendaGroup = parts[2];
     if (agendaGroup) {
-      context.options.agendaGroup = agendaGroup.replace(
-        /^["']|["']$/g,
-        ""
-      ) as AgendaGroupTag;
+      context.options.agendaGroup = agendaGroup.replace(/^["']|["']$/g, "") as AgendaGroupTag;
     } else {
       throw new Error("Invalid agenda-group " + parts[2]);
     }
@@ -202,7 +170,7 @@ function autoFocus(src: string, context: IRuleContext) {
     const parts = src.match(autoFocusRegexp)!,
       autoFocus = parts[2];
     if (autoFocus) {
-      context.options.autoFocus = autoFocus === "true" ? true : false;
+      context.options.autoFocus = autoFocus === "true";
     } else {
       throw new Error("Invalid auto-focus " + parts[2]);
     }
@@ -218,14 +186,10 @@ function when(orig: string, context: IRuleContext) {
   if (utils.findNextToken(src) === "{") {
     const body = utils.getTokensBetween(src, "{", "}", true).join("");
     src = src.replace(body, "");
-    context.constraints = parseRules(body.replace(/^\{\s*|\}\s*$/g, ""));
+    context.constraints = parseRules(body.replace(/^{\s*|}\s*$/g, ""));
     return src;
   } else {
-    throw new Error(
-      "unexpected token : expected : '{' found : '" +
-        utils.findNextToken(src) +
-        "'"
-    );
+    throw new Error("unexpected token : expected : '{' found : '" + utils.findNextToken(src) + "'");
   }
 }
 
@@ -236,27 +200,20 @@ function then(orig: string, context: IRuleContext) {
       const body = utils.getTokensBetween(src, "{", "}", true).join("");
       src = src.replace(body, "");
       if (!context.action) {
-        context.action = body.replace(/^\{\s*|\}\s*$/g, "");
+        context.action = body.replace(/^{\s*|}\s*$/g, "");
       }
       if (!isWhiteSpace(src)) {
         throw new Error("Error parsing then block " + orig);
       }
       return src;
     } else {
-      throw new Error(
-        "unexpected token : expected : '{' found : '" +
-          utils.findNextToken(src) +
-          "'"
-      );
+      throw new Error("unexpected token : expected : '{' found : '" + utils.findNextToken(src) + "'");
     }
   } else {
     throw new Error("action already defined for rule" + context.name);
   }
 }
-const ruleTokens: Keywords<IRuleContext> = new Map<
-  string,
-  (orig: string, context: IRuleContext) => string
->();
+const ruleTokens: Keywords<IRuleContext> = new Map<string, (orig: string, context: IRuleContext) => string>();
 
 ruleTokens.set("salience", salience);
 ruleTokens.set("priority", salience);
@@ -267,7 +224,7 @@ ruleTokens.set("auto-focus", autoFocus);
 ruleTokens.set("when", when);
 ruleTokens.set("then", then);
 
-function comment(orig: string, context: IContext) {
+function comment(orig: string) {
   if (orig.match(/^\/\*/)) {
     // Block Comment parse
     return orig.replace(/\/\*.*?\*\//, "");
@@ -288,11 +245,7 @@ function def(orig: string, context: IContext) {
       context.define.push({ name: name[1], properties: "(" + body + ")" });
       return src;
     } else {
-      throw new Error(
-        "unexpected token : expected : '{' found : '" +
-          utils.findNextToken(src) +
-          "'"
-      );
+      throw new Error("unexpected token : expected : '{' found : '" + utils.findNextToken(src) + "'");
     }
   } else {
     throw new Error("missing name");
@@ -325,11 +278,7 @@ function glbl(orig: string, context: IContext) {
       src = src.replace(fullbody, "");
       return src;
     } else {
-      throw new Error(
-        "unexpected token : expected : '=' found : '" +
-          utils.findNextToken(src) +
-          "'"
-      );
+      throw new Error("unexpected token : expected : '=' found : '" + utils.findNextToken(src) + "'");
     }
   } else {
     throw new Error("missing name");
@@ -352,18 +301,10 @@ function fun(orig: string, context: IContext) {
         context.scope.push({ name: name[1], body: "function" + params + body });
         return src;
       } else {
-        throw new Error(
-          "unexpected token : expected : '{' found : '" +
-            utils.findNextToken(src) +
-            "'"
-        );
+        throw new Error("unexpected token : expected : '{' found : '" + utils.findNextToken(src) + "'");
       }
     } else {
-      throw new Error(
-        "unexpected token : expected : '(' found : '" +
-          utils.findNextToken(src) +
-          "'"
-      );
+      throw new Error("unexpected token : expected : '(' found : '" + utils.findNextToken(src) + "'");
     }
   } else {
     throw new Error("missing name");
@@ -392,21 +333,14 @@ function rule(orig: string, context: IContext) {
       context.rules.push(rule);
       return src;
     } else {
-      throw new Error(
-        "unexpected token : expected : '{' found : '" +
-          utils.findNextToken(src) +
-          "'"
-      );
+      throw new Error("unexpected token : expected : '{' found : '" + utils.findNextToken(src) + "'");
     }
   } else {
     throw new Error("missing name");
   }
 }
 
-export const topLevelTokens = new Map<
-  string,
-  (orig: string, context: IContext) => string
->();
+export const topLevelTokens = new Map<string, (orig: string, context: IContext) => string>();
 topLevelTokens.set("/", comment);
 topLevelTokens.set("define", def);
 topLevelTokens.set("global", glbl);

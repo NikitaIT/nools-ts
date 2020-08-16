@@ -1,4 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { Parser } = require("jison");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require("fs");
 
 // const Parser = require("jison").Parser, fs = require("fs");
@@ -72,24 +74,15 @@ const grammar = {
 
     MULTIPLICATIVE_EXPRESSION: [
       "UNARY_EXPRESSION",
-      [
-        "MULTIPLICATIVE_EXPRESSION * UNARY_EXPRESSION",
-        "$$ = [$1, $3, 'mult'];",
-      ],
+      ["MULTIPLICATIVE_EXPRESSION * UNARY_EXPRESSION", "$$ = [$1, $3, 'mult'];"],
       ["MULTIPLICATIVE_EXPRESSION / UNARY_EXPRESSION", "$$ = [$1, $3, 'div'];"],
       ["MULTIPLICATIVE_EXPRESSION % UNARY_EXPRESSION", "$$ = [$1, $3, 'mod'];"],
     ],
 
     ADDITIVE_EXPRESSION: [
       "MULTIPLICATIVE_EXPRESSION",
-      [
-        "ADDITIVE_EXPRESSION + MULTIPLICATIVE_EXPRESSION",
-        "$$ = [$1, $3, 'plus'];",
-      ],
-      [
-        "ADDITIVE_EXPRESSION - MULTIPLICATIVE_EXPRESSION",
-        "$$ = [$1, $3, 'minus'];",
-      ],
+      ["ADDITIVE_EXPRESSION + MULTIPLICATIVE_EXPRESSION", "$$ = [$1, $3, 'plus'];"],
+      ["ADDITIVE_EXPRESSION - MULTIPLICATIVE_EXPRESSION", "$$ = [$1, $3, 'minus'];"],
     ],
 
     EXPONENT_EXPRESSION: [
@@ -108,23 +101,11 @@ const grammar = {
     EQUALITY_EXPRESSION: [
       "RELATIONAL_EXPRESSION",
       ["EQUALITY_EXPRESSION == RELATIONAL_EXPRESSION", "$$ = [$1, $3, 'eq'];"],
-      [
-        "EQUALITY_EXPRESSION === RELATIONAL_EXPRESSION",
-        "$$ = [$1, $3, 'seq'];",
-      ],
+      ["EQUALITY_EXPRESSION === RELATIONAL_EXPRESSION", "$$ = [$1, $3, 'seq'];"],
       ["EQUALITY_EXPRESSION != RELATIONAL_EXPRESSION", "$$ = [$1, $3, 'neq'];"],
-      [
-        "EQUALITY_EXPRESSION !== RELATIONAL_EXPRESSION",
-        "$$ = [$1, $3, 'sneq'];",
-      ],
-      [
-        "EQUALITY_EXPRESSION =~ RELATIONAL_EXPRESSION",
-        "$$ = [$1, $3, 'like'];",
-      ],
-      [
-        "EQUALITY_EXPRESSION !=~ RELATIONAL_EXPRESSION",
-        "$$ = [$1, $3, 'notLike'];",
-      ],
+      ["EQUALITY_EXPRESSION !== RELATIONAL_EXPRESSION", "$$ = [$1, $3, 'sneq'];"],
+      ["EQUALITY_EXPRESSION =~ RELATIONAL_EXPRESSION", "$$ = [$1, $3, 'like'];"],
+      ["EQUALITY_EXPRESSION !=~ RELATIONAL_EXPRESSION", "$$ = [$1, $3, 'notLike'];"],
     ],
 
     IN_EXPRESSION: [
@@ -135,64 +116,31 @@ const grammar = {
       ["LITERAL_EXPRESSION notIn OBJECT_EXPRESSION", "$$ = [$1, $3, 'notIn'];"],
     ],
 
-    AND_EXPRESSION: [
-      "IN_EXPRESSION",
-      ["AND_EXPRESSION && IN_EXPRESSION", "$$ = [$1, $3, 'and'];"],
-    ],
+    AND_EXPRESSION: ["IN_EXPRESSION", ["AND_EXPRESSION && IN_EXPRESSION", "$$ = [$1, $3, 'and'];"]],
 
-    OR_EXPRESSION: [
-      "AND_EXPRESSION",
-      ["OR_EXPRESSION || AND_EXPRESSION", "$$ = [$1, $3, 'or'];"],
-    ],
+    OR_EXPRESSION: ["AND_EXPRESSION", ["OR_EXPRESSION || AND_EXPRESSION", "$$ = [$1, $3, 'or'];"]],
 
-    ARGUMENT_LIST: [
-      "LITERAL_EXPRESSION",
-      ["ARGUMENT_LIST , LITERAL_EXPRESSION", "$$ = [$1, $3, 'arguments']"],
-    ],
+    ARGUMENT_LIST: ["LITERAL_EXPRESSION", ["ARGUMENT_LIST , LITERAL_EXPRESSION", "$$ = [$1, $3, 'arguments']"]],
 
-    IDENTIFIER_EXPRESSION: [
-      ["IDENTIFIER", "$$ = [String(yytext), null, 'identifier'];"],
-    ],
+    IDENTIFIER_EXPRESSION: [["IDENTIFIER", "$$ = [String(yytext), null, 'identifier'];"]],
 
     OBJECT_EXPRESSION: [
       "IDENTIFIER_EXPRESSION",
       ["OBJECT_EXPRESSION . IDENTIFIER_EXPRESSION", "$$ = [$1,$3, 'prop'];"],
-      [
-        "OBJECT_EXPRESSION [ STRING_EXPRESSION ]",
-        "$$ = [$1,$3, 'propLookup'];",
-      ],
-      [
-        "OBJECT_EXPRESSION [ NUMBER_EXPRESSION ]",
-        "$$ = [$1,$3, 'propLookup'];",
-      ],
-      [
-        "OBJECT_EXPRESSION [ OBJECT_EXPRESSION ]",
-        "$$ = [$1,$3, 'propLookup'];",
-      ],
-      [
-        "OBJECT_EXPRESSION ( )",
-        "$$ = [$1, [null, null, 'arguments'], 'function']",
-      ],
+      ["OBJECT_EXPRESSION [ STRING_EXPRESSION ]", "$$ = [$1,$3, 'propLookup'];"],
+      ["OBJECT_EXPRESSION [ NUMBER_EXPRESSION ]", "$$ = [$1,$3, 'propLookup'];"],
+      ["OBJECT_EXPRESSION [ OBJECT_EXPRESSION ]", "$$ = [$1,$3, 'propLookup'];"],
+      ["OBJECT_EXPRESSION ( )", "$$ = [$1, [null, null, 'arguments'], 'function']"],
       ["OBJECT_EXPRESSION ( ARGUMENT_LIST )", "$$ = [$1, $3, 'function']"],
     ],
 
-    STRING_EXPRESSION: [
-      [
-        "STRING",
-        "$$ = [String(yytext.replace(/^['|\"]|['|\"]$/g, '')), null, 'string'];",
-      ],
-    ],
+    STRING_EXPRESSION: [["STRING", "$$ = [String(yytext.replace(/^['|\"]|['|\"]$/g, '')), null, 'string'];"]],
 
     NUMBER_EXPRESSION: [["NUMBER", "$$ = [Number(yytext), null, 'number'];"]],
 
     REGEXP_EXPRESSION: [["REGEXP", "$$ = [yytext, null, 'regexp'];"]],
 
-    BOOLEAN_EXPRESSION: [
-      [
-        "BOOLEAN",
-        "$$ = [yytext.replace(/^\\s+/, '') == 'true', null, 'boolean'];",
-      ],
-    ],
+    BOOLEAN_EXPRESSION: [["BOOLEAN", "$$ = [yytext.replace(/^\\s+/, '') == 'true', null, 'boolean'];"]],
 
     NULL_EXPRESSION: [["NULL", "$$ = [null, null, 'null'];"]],
 
@@ -222,8 +170,6 @@ const parser = new Parser(grammar, {
   moduleType: "commonjs",
 });
 fs.writeFileSync(__dirname + "/parser.js", parser.generate());
-
-import * as path from "path";
 
 const amd_parser = new Parser(grammar, {
   "token-stack": true,

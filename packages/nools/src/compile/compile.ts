@@ -1,4 +1,4 @@
-import { isEmpty, isHash, isObject, keys, isMap } from "@nools/lodash-port";
+import { isEmpty, isHash, isObject, keys } from "@nools/lodash-port";
 
 import {
   IContext,
@@ -10,7 +10,6 @@ import {
   IOrConstraint,
   ICompileOptions,
   ICondition,
-  IRule,
 } from "../interfaces";
 import { IConstraint } from "../constraint";
 import { removeDups, to_map } from "../lang";
@@ -20,26 +19,17 @@ import { parseConstraint } from "./parser/constraint";
 import { CreatedRule, createRule } from "./rule";
 
 function parseConditions(
-  constraint:
-    | ISimpleConstraint
-    | INomalConstraint
-    | INotConstraint
-    | IFromstraint
-    | IOrConstraint,
+  constraint: ISimpleConstraint | INomalConstraint | INotConstraint | IFromstraint | IOrConstraint,
   defined: Map<string, any>,
-  name: string
+  name: string,
 ): [string[], any[]] {
   if (constraint.length) {
-    let conditions: any[][] = [];
+    const conditions: any[][] = [];
     let identifiers: string[] = [];
     const r0 = constraint[0];
     if (r0 === "not" || r0 === "exists") {
       constraint.shift();
-      const [i, c, r] = __resolveRule(
-        constraint as INomalConstraint | IFromstraint,
-        defined,
-        name
-      );
+      const [i, c, r] = __resolveRule(constraint as INomalConstraint | IFromstraint, defined, name);
       identifiers = identifiers.concat(i as string[]);
       if (r) {
         const idents = r.filter((ident) => {
@@ -56,25 +46,16 @@ function parseConditions(
       constraint.shift();
       (constraint as IOrConstraint).forEach((cond) => {
         const [i, c] = parseConditions(
-          cond as
-            | ISimpleConstraint
-            | INomalConstraint
-            | INotConstraint
-            | IFromstraint
-            | IOrConstraint,
+          cond as ISimpleConstraint | INomalConstraint | INotConstraint | IFromstraint | IOrConstraint,
           defined,
-          name
+          name,
         );
         conds = conds.concat(c);
         identifiers = identifiers.concat(i as string[]);
       });
       conditions.push(conds);
     } else {
-      const [i, c, r] = __resolveRule(
-        constraint as INomalConstraint | IFromstraint,
-        defined,
-        name
-      );
+      const [i, c, r] = __resolveRule(constraint as INomalConstraint | IFromstraint, defined, name);
       conditions.push(c as any[]);
       identifiers = identifiers.concat(i as string[]);
       if (r) {
@@ -139,7 +120,7 @@ function createRuleFromObject(
   obj: IRuleContext,
   defined: Map<string, any>,
   scope: Map<string, any>,
-  cs: IConstraint[]
+  cs: IConstraint[],
 ) {
   const name = obj.name;
   if (isEmpty(obj)) {
@@ -147,8 +128,8 @@ function createRuleFromObject(
   }
   const options = obj.options || {};
   options.scope = scope;
-  let constraints = obj.constraints || [],
-    l = constraints.length;
+  let constraints = obj.constraints || [];
+  const l = constraints.length;
   if (!l) {
     constraints = [["initialfact", "__o__"]];
   }
@@ -163,31 +144,12 @@ function createRuleFromObject(
     conditions = conditions.concat(c);
     identifiers = identifiers.concat(i);
   });
-  return createRule(
-    name,
-    options,
-    conditions,
-    cs,
-    parseAction(action, identifiers, defined, scope)
-  );
+  return createRule(name, options, conditions, cs, parseAction(action, identifiers, defined, scope));
 }
 
-const modifiers = [
-  "assert",
-  "modify",
-  "retract",
-  "emit",
-  "halt",
-  "focus",
-  "getFacts",
-];
+const modifiers = ["assert", "modify", "retract", "emit", "halt", "focus", "getFacts"];
 
-function parseAction(
-  action: string,
-  identifiers: string[],
-  defined: Map<string, any>,
-  scope: Map<string, any>
-) {
+function parseAction(action: string, identifiers: string[], defined: Map<string, any>, scope: Map<string, any>) {
   const append_declares = get_append_declares(action);
 
   const declares = append_declares(identifiers, "facts")
@@ -203,11 +165,7 @@ function parseAction(
   return action.trim();
 }
 
-function __resolveRule(
-  rule: INomalConstraint | IFromstraint,
-  defined: Map<string, any>,
-  name: string
-) {
+function __resolveRule(rule: INomalConstraint | IFromstraint, defined: Map<string, any>, name: string) {
   const condition = [] as any[],
     alias = rule[1];
   // const condition = [] as [any, string, string, string], alias = rule[1];
@@ -226,9 +184,7 @@ function __resolveRule(
   condition.push(alias, constraint, refs);
   let identifiers = [alias];
   if (constraint) {
-    identifiers = identifiers.concat(
-      getIdentifiers(parseConstraint(constraint))
-    );
+    identifiers = identifiers.concat(getIdentifiers(parseConstraint(constraint)));
   }
   if (isObject(refs)) {
     const idents: string[] = [];

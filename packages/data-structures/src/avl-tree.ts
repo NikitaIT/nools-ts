@@ -57,11 +57,7 @@ function insertAdjustBalance<T>(root: ITreeNode<T>, dir: Dir) {
   return root;
 }
 
-function removeAdjustBalance<T>(
-  root: ITreeNode<T>,
-  dir: Dir,
-  done: { done: boolean }
-) {
+function removeAdjustBalance<T>(root: ITreeNode<T>, dir: Dir, done: { done: boolean }) {
   const otherDir = dir === "left" ? "right" : "left";
   const n = root[otherDir] as ITreeNode<T>;
   const bal = dir === "right" ? -1 : 1;
@@ -83,6 +79,7 @@ function removeAdjustBalance<T>(
 
 export class AVLTree<T> extends Tree<T> {
   insert(data: T): void | null {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const tree = this;
     const cmp = this.compare;
     /* Empty tree case */
@@ -129,6 +126,7 @@ export class AVLTree<T> extends Tree<T> {
   }
 
   remove(data: T): void {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const tree = this;
     const cmp = this.compare;
 

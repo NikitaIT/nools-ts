@@ -1,9 +1,4 @@
-import {
-  IFromPattern,
-  IObjectPattern,
-  IPattern,
-  patternType,
-} from "../../pattern";
+import { IPattern, patternType } from "../../pattern";
 import { from } from "./from";
 import { obj } from "./obj";
 
@@ -19,11 +14,7 @@ const funcByType: Partial<Record<
   [patternType.from_exists]: from,
   [patternType.from_not]: from,
 };
-export function pt(
-  pattern: IPattern,
-  defines: Map<string, any>,
-  scope: Map<string, any>
-) {
+export function pt(pattern: IPattern, defines: Map<string, any>, scope: Map<string, any>) {
   const fun = funcByType[pattern.tp];
   return fun ? fun(pattern, defines, scope) : pattern;
 }

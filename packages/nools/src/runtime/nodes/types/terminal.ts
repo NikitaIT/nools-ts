@@ -1,12 +1,6 @@
 import { RuleAfterCompile, RuleBeforeCompile } from "../../rule";
-import {
-  AgendaTree,
-  compile_rules,
-  IConstraint,
-  IPattern,
-  IRule,
-} from "../import";
-import { IBucket, INode, IRootNode } from "./INode";
+import { AgendaTree, compile_rules, IConstraint, IPattern } from "../import";
+import { IBucket, INode, IRootNode } from "../INode";
 
 export interface ITerminalNodeData extends INode {
   i: number;
@@ -28,8 +22,6 @@ export function terminal(
   agenda: AgendaTree,
   defines: Map<string, any>,
   scope: Map<string, any>,
-  patterns: IPattern[],
-  cs: IConstraint[]
 ): ITerminalNode {
   const rule = compile_rules(node.r, defines, scope);
   const n: ITerminalNode = {

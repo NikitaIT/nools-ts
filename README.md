@@ -1,6 +1,10 @@
 # nools-ts
 [nools](https://github.com/C2FO/nools) in TypeScript.
 
+# Architecture
+ 
+![Module Dependencies](https://github.com/NikitaIT/nools-ts/tree/master/architecture/deps.png)
+
 # Nools
 
 [![Join the chat at https://gitter.im/C2FO/nools](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/C2FO/nools?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)

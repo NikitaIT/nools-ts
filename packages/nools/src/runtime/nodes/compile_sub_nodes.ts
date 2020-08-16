@@ -1,11 +1,8 @@
 import { clone } from "@nools/lodash-port";
 import { IPattern } from "./import";
-import { INode, INodeWithSubNodes } from "./types";
+import { INode, INodeWithSubNodes } from "./INode";
 
-export function compile_sub_nodes(
-  patterns: IPattern[],
-  node: INode & INodeWithSubNodes
-) {
+export function compile_sub_nodes(patterns: IPattern[], node: INode & INodeWithSubNodes) {
   const n = clone(node, true);
   const nodes = (n.nodes = new Map<number, IPattern[]>());
   node.ns.forEach(([outNode, pattern]) => {

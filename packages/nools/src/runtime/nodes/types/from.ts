@@ -9,7 +9,7 @@ import {
   is_instance_of_equality,
   is_instance_of_reference_constraint,
 } from "../import";
-import { IRootNode } from "./INode";
+import { IRootNode } from "../INode";
 import { IJoinNode, join } from "./join";
 
 export interface IFromNode extends IJoinNode {
@@ -32,7 +32,7 @@ export function from(
   defines: Map<string, any>,
   scope: Map<string, any>,
   patterns: IPattern[],
-  cs: IConstraint[]
+  cs: IConstraint[],
 ): IFromNode {
   // const pattern = pt(node.pattern, defines, scope) as IFromPattern;
   const pattern = patterns[node.p] as IFromPattern;
@@ -45,23 +45,13 @@ export function from(
   constraints.forEach((cc) => {
     const c = cs[cc];
     if (is_instance_of_equality(c) || is_instance_of_reference_constraint(c)) {
-      eqConstraints.push(
-        (factHanle1: Map<string, Fact>, factHandle2: Map<string, Fact>) => {
-          return c.assert(factHanle1, factHandle2);
-        }
-      );
+      eqConstraints.push((factHanle1: Map<string, Fact>, factHandle2: Map<string, Fact>) => {
+        return c.assert(factHanle1, factHandle2);
+      });
     }
   });
   const vars = node.__variables;
-  node = (join(
-    node,
-    root,
-    agenda,
-    defines,
-    scope,
-    patterns,
-    cs
-  ) as IJoinNode) as IFromNode;
+  node = (join(node, root, agenda, defines, scope, patterns, cs) as IJoinNode) as IFromNode;
   return mixin(node, {
     pattern: pattern,
     alias: pattern.a,

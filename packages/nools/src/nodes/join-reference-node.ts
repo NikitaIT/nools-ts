@@ -1,11 +1,8 @@
 import { mixin } from "@nools/lodash-port";
-import { INode, nodeType } from "../runtime/nodes/types";
+import { INode, nodeType } from "../runtime/nodes/INode";
 import { Context, Match } from "../context";
-import {
-  IReferenceConstraint,
-  is_instance_of_reference_eq_constraint,
-} from "../constraint";
-import { create_node } from "../compile/nodes";
+import { IReferenceConstraint, is_instance_of_reference_eq_constraint } from "../constraint";
+import { create_node } from "../compile/nodes/create_node";
 import { IMemory, addIndex } from "./misc/memory";
 
 const inversions: { [op: string]: string } = {
@@ -17,21 +14,14 @@ const inversions: { [op: string]: string } = {
   neq: "neq",
 };
 
-function normalizeIndexConstraint(
-  index: string,
-  indexes: string[],
-  op: string
-) {
+function normalizeIndexConstraint(index: string, indexes: string[], op: string) {
   if (index === indexes[1]) {
     op = inversions[op];
   }
   return op;
 }
 
-export function addConstraint(
-  node: IJoinReferenceNode,
-  constraint: IReferenceConstraint
-) {
+export function addConstraint(node: IJoinReferenceNode, constraint: IReferenceConstraint) {
   if (is_instance_of_reference_eq_constraint(constraint)) {
     const identifiers = constraint.getIndexableProperties();
     const alias = constraint.a;
@@ -51,16 +41,8 @@ export function addConstraint(
         }
       }
       if (leftIndex && rightIndex) {
-        const leftOp = normalizeIndexConstraint(
-            leftIndex,
-            indexes,
-            constraint.op
-          ),
-          rightOp = normalizeIndexConstraint(
-            rightIndex,
-            indexes,
-            constraint.op
-          );
+        const leftOp = normalizeIndexConstraint(leftIndex, indexes, constraint.op),
+          rightOp = normalizeIndexConstraint(rightIndex, indexes, constraint.op);
         addIndex(node.rightMemory, rightIndex, leftIndex, rightOp);
         addIndex(node.leftMemory, leftIndex, rightIndex, leftOp);
       }
@@ -89,7 +71,7 @@ export function addConstraint(
 }
 
 const DEFUALT_CONSTRAINT = ({
-  assert(it: any, fh?: any) {
+  assert() {
     return true;
   },
 
@@ -109,10 +91,7 @@ export interface IJoinReferenceNode extends INode {
   match(lc: Context, rc: Context): Match;
 }
 
-export function create_join_reference_node(
-  leftMemory: IMemory,
-  rightMemory: IMemory
-): IJoinReferenceNode {
+export function create_join_reference_node(leftMemory: IMemory, rightMemory: IMemory): IJoinReferenceNode {
   const constraint = DEFUALT_CONSTRAINT;
   const constraintAssert = DEFUALT_CONSTRAINT.assert;
   return mixin(create_node(nodeType.join_reference), {

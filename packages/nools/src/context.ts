@@ -51,10 +51,7 @@ export class Match {
     this.facts.push(assertable);
     this.recency.push(assertable.recency);
     this.factIds.push(assertable.id);
-    this.hashCode =
-      this.hashCode.length === 0
-        ? assertable.id + ""
-        : this.hashCode + ":" + assertable.id;
+    this.hashCode = this.hashCode.length === 0 ? assertable.id + "" : this.hashCode + ":" + assertable.id;
     return this;
   }
 

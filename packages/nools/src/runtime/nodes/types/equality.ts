@@ -1,5 +1,5 @@
 import { AgendaTree, IConstraint, IPattern } from "../import";
-import { IRootNode, IAlphaNode, IAlphaNodeBeforeCompile } from "./INode";
+import { IRootNode, IAlphaNode, IAlphaNodeBeforeCompile } from "../INode";
 
 export interface IEqualityNode extends IAlphaNode {
   memory: Map<string, boolean>;
@@ -14,7 +14,7 @@ export function equality(
   defines: Map<string, any>,
   scope: Map<string, any>,
   patterns: IPattern[],
-  cs: IConstraint[]
+  cs: IConstraint[],
 ): IEqualityNodeBeforeCompile {
   const constraint = cs[node.c];
   return {

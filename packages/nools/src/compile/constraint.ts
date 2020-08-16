@@ -5,7 +5,6 @@ import {
   ITrueConstraint,
   IEqualityConstraint,
   IObjectConstraint,
-  IHashConstraint,
   IFromConstraint,
   IReferenceConstraint,
 } from "../constraint";

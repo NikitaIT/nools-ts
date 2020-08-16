@@ -1,12 +1,5 @@
-import {
-  AgendaTree,
-  IConstraint,
-  IMemory,
-  IPattern,
-  ITuple,
-  Memory,
-} from "../import";
-import { INode, IRootNode } from "./INode";
+import { IMemory, ITuple, Memory } from "../import";
+import { INode } from "../INode";
 
 export interface IBetaNode extends INode {
   leftMemory: { [hasCode: string]: ITuple };
@@ -14,15 +7,7 @@ export interface IBetaNode extends INode {
   leftTuples: IMemory;
   rightTuples: IMemory;
 }
-export function beta(
-  node: IBetaNode,
-  root: IRootNode,
-  agenda: AgendaTree,
-  defines: Map<string, any>,
-  scope: Map<string, any>,
-  patterns: IPattern[],
-  cs: IConstraint[]
-): IBetaNode {
+export function beta(node: IBetaNode): IBetaNode {
   return {
     id: node.id,
     nodes: node.nodes,

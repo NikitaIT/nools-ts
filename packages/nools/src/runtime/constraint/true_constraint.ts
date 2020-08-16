@@ -5,7 +5,7 @@ export function true_constraint(constraint: ITrueConstraint): ITrueConstraint {
   return {
     tp: constraintType.true,
     a: alias,
-    assert(it) {
+    assert() {
       return true;
     },
     equal(that: IConstraint) {

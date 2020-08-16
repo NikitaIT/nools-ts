@@ -1,7 +1,7 @@
 const defaultMaxListeners = 10;
 export type SpecialEvents = "error" | "newListener";
 type Events<TEvents extends keyof any> = {
-  [type in TEvents]: Function[];
+  [type in TEvents]: Array<(...args: any[]) => any>;
 };
 // Should be:
 // & {
@@ -10,18 +10,18 @@ type Events<TEvents extends keyof any> = {
 export class EventEmitter<TEvents extends keyof any = string> {
   constructor(
     private maxListeners = defaultMaxListeners,
-    private _events: Partial<Events<TEvents | SpecialEvents>> = {}
+    private _events: Partial<Events<TEvents | SpecialEvents>> = {},
   ) {}
 
   setMaxListeners(n: number) {
     this.maxListeners = n;
   }
 
-  on(type: TEvents | SpecialEvents, listener: Function) {
+  on(type: TEvents | SpecialEvents, listener: (...args: any[]) => any) {
     return this.addListener(type, listener);
   }
 
-  addListener(type: TEvents | SpecialEvents, listener: Function) {
+  addListener(type: TEvents | SpecialEvents, listener: (...args: any[]) => any) {
     if ("function" !== typeof listener) {
       throw new Error("addListener only takes instances of Function");
     }
@@ -44,7 +44,7 @@ export class EventEmitter<TEvents extends keyof any = string> {
     return this;
   }
 
-  private checkForListenerLeak(listeners: Function[]) {
+  private checkForListenerLeak(listeners: Array<(...args: any[]) => any>) {
     if (!(listeners as any).warned) {
       const m = this.maxListeners;
 
@@ -54,7 +54,7 @@ export class EventEmitter<TEvents extends keyof any = string> {
           "(node) warning: possible EventEmitter memory " +
             "leak detected. %d listeners added. " +
             "Use emitter.setMaxListeners() to increase limit.",
-          listeners.length
+          listeners.length,
         );
         console.trace();
       }
@@ -88,7 +88,8 @@ export class EventEmitter<TEvents extends keyof any = string> {
     }
   }
 
-  once(type: TEvents | SpecialEvents, listener: Function) {
+  once(type: TEvents | SpecialEvents, listener: (...args: any[]) => any) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     this.on(type, function g(...args: any[]) {
       self.removeListener(type, g);
@@ -98,7 +99,7 @@ export class EventEmitter<TEvents extends keyof any = string> {
     return this;
   }
 
-  removeListener(type: TEvents | SpecialEvents, listener: Function) {
+  removeListener(type: TEvents | SpecialEvents, listener: (...args: any[]) => any) {
     if ("function" !== typeof listener) {
       throw new Error("removeListener only takes instances of Function");
     }
@@ -141,10 +142,7 @@ export class EventEmitter<TEvents extends keyof any = string> {
     return this._events[type] || [];
   }
 
-  listenerCount<TEvents extends keyof any>(
-    emitter: EventEmitter<TEvents>,
-    type: TEvents | SpecialEvents
-  ) {
+  listenerCount<TEvents extends keyof any>(emitter: EventEmitter<TEvents>, type: TEvents | SpecialEvents) {
     const fns = emitter._events[type];
     return fns ? fns.length : 0;
   }

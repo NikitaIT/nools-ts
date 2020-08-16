@@ -1,5 +1,5 @@
 import { AgendaTree, IConstraint, IPattern, IObjectPattern } from "../import";
-import { INode, IRootNode } from "./INode";
+import { INode, IRootNode } from "../INode";
 
 export interface IAliasNode extends INode {
   constraint: IObjectPattern; // IPattern[p] === constraint
@@ -23,7 +23,6 @@ export function alias(
   defines: Map<string, any>,
   scope: Map<string, any>,
   patterns: IPattern[],
-  cs: IConstraint[]
 ): IAliasNode {
   const pattern = patterns[node.p] as IObjectPattern;
   return {

@@ -1,6 +1,6 @@
 import { Flow, FlowEvent } from "./flow";
 import { AgendaTree } from "./agenda";
-import { IBucketed, IRootNode } from "./runtime/nodes/types";
+import { IBucketed, IRootNode } from "./runtime/nodes/INode";
 
 export class ExecutionStragegy {
   private looping = false;
@@ -11,10 +11,7 @@ export class ExecutionStragegy {
   private readonly onAlter: () => void = () => {
     this.flowAltered = true;
   };
-  constructor(
-    private readonly flow: Flow,
-    private readonly matchUntilHalt = false
-  ) {}
+  constructor(private readonly flow: Flow, private readonly matchUntilHalt = false) {}
 
   halt() {
     this.__halted = true;
@@ -69,7 +66,7 @@ export class ExecutionStragegy {
   }
 
   execute() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       this.setup();
       resolve(this.callNext());
     });

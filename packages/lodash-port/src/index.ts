@@ -13,14 +13,22 @@ import _keys from "lodash-ts/keys";
 import _isObject from "lodash-ts/isObject";
 import _isMap from "lodash-ts/isMap";
 import _intersection from "lodash-ts/intersection";
+import _isWeakMap from "lodash-ts/isWeakMap";
 /*
   todo: REPLACE THIS SHIT. @nools/lodash-port
   USE: javascript
 */
 export const isArray = _isArray;
 export const keys = _keys;
-export const isObject = _isObject;
-export const isMap = _isMap;
+export function isObject(value: any): value is Record<any, any> {
+  return _isObject(value);
+}
+export function isWeakMap(value: any): value is WeakMap<any, any> {
+  return _isWeakMap(value);
+}
+export function isMap(value: any): value is Map<any, any> {
+  return _isMap(value);
+}
 export const intersection = _intersection;
 
 export function isBoolean(value: any): value is boolean {
@@ -39,7 +47,7 @@ export function isString(value: any): value is string {
   return _isString(value);
 }
 
-export function isFunction(value: any): value is Function {
+export function isFunction<T extends (...args: any[]) => any>(value: any): value is T {
   return _isFunction(value);
 }
 

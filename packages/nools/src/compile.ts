@@ -2,8 +2,6 @@ import { keys, isString } from "@nools/lodash-port";
 
 import { InitialFact } from "./facts/initial";
 import { to_map } from "./lang";
-import { parse_rules } from "./compile/index";
-import { ICompileOptions } from "./interfaces";
 export function get_defines(d?: Map<string, any>) {
   return withPredefined(to_map(d));
 }
@@ -32,11 +30,7 @@ export function withPredefined(defines: Map<string, any>) {
   return defines;
 }
 
-export function createFunction(
-  body: string,
-  defined: Map<string, any>,
-  scope: Map<string, any>
-) {
+export function createFunction(body: string, defined: Map<string, any>, scope: Map<string, any>) {
   const declares: string[] = [];
   defined.forEach((v, k) => {
     if (body.indexOf(k) !== -1) {
@@ -49,13 +43,7 @@ export function createFunction(
     }
   });
 
-  body = [
-    "((function(){",
-    declares.join(""),
-    "\n\treturn ",
-    body,
-    "\n})())",
-  ].join("");
+  body = ["((function(){", declares.join(""), "\n\treturn ", body, "\n})())"].join("");
   try {
     return eval(body);
   } catch (e) {
@@ -63,11 +51,7 @@ export function createFunction(
   }
 }
 
-export function createDefined(
-  action: string | any,
-  defined: Map<string, any>,
-  scope: Map<string, any>
-) {
+export function createDefined(action: string | any, defined: Map<string, any>, scope: Map<string, any>) {
   if (isString(action)) {
     const declares = keys(defined)
       .filter((name) => {
@@ -83,7 +67,7 @@ export function createDefined(
           })
           .map((name) => {
             return `var ${name}= function(){var prop=scope.get('${name}'); return __objToStr__.call(prop)==='[object Function]' ? prop.apply(void 0, arguments) : prop;};`;
-          })
+          }),
       );
 
     if (declares.length) {
@@ -93,8 +77,7 @@ export function createDefined(
     action = new Function("defined", "scope", action)(defined, scope);
   }
   const ret =
-    action.hasOwnProperty("constructor") &&
-    "function" === typeof action.constructor
+    action.hasOwnProperty("constructor") && "function" === typeof action.constructor
       ? action.constructor
       : function (opts: any) {
           opts = opts || {};
@@ -109,8 +92,4 @@ export function createDefined(
     proto[i] = action[i];
   }
   return ret;
-}
-
-export function compile(src: string, options: ICompileOptions) {
-  return parse_rules(src, options);
 }

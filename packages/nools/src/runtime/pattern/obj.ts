@@ -1,10 +1,7 @@
 import { IObjectPattern } from "../../pattern";
 
-export function obj(
-  pattern: IObjectPattern,
-  defines: Map<string, any>,
-  scope: Map<string, any>
-): IObjectPattern {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function obj(pattern: IObjectPattern, defines: Map<string, any>, scope: Map<string, any>): IObjectPattern {
   // todo: check ignore
   // @ts-ignore
   const class_type = defines.get(pattern.cls);

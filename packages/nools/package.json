@@ -4,11 +4,13 @@
 	"description": "nools in TypeScript.",
 	"main": "nools.min.js",
 	"scripts": {
-		"test": "mocha -R dot --require should ./tests/**.test.js --max-old-space-size=4096 --harmony --check-leaks",
-		"converage": "istanbul cover -hook-run-in-content node_modules/mocha/bin/_mocha --require should ./tests/**.test.js --max-old-space-size=4096 --harmony --check-leaks",
-		"dist": "gulp && npm publish ./dist/",
-		"build": "gulp",
-		"karma": "karma start ./tests/karma.unit.js"
+		"test1": "mocha -R dot --require should ./tests/**.test.js --max-old-space-size=4096 --harmony --check-leaks",
+		"converage1": "istanbul cover -hook-run-in-content node_modules/mocha/bin/_mocha --require should ./tests/**.test.js --max-old-space-size=4096 --harmony --check-leaks",
+		"dist1": "gulp && npm publish ./dist/",
+		"build1": "gulp",
+		"karma1": "karma start ./tests/karma.unit.js",
+		"build": "tsc -b .",
+		"start": "tsc -w --preserveWatchOutput"
 	},
 	"keywords": [
 		"nools"

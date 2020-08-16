@@ -1,11 +1,6 @@
 import { clone } from "@nools/lodash-port";
 import { AgendaTree, IConstraint, IPattern } from "../import";
-import {
-  IAlphaNode,
-  IRootNode,
-  IAlphaNodeBeforeCompile,
-  IAlphaNodeData,
-} from "./INode";
+import { IAlphaNode, IRootNode, IAlphaNodeBeforeCompile, IAlphaNodeData } from "../INode";
 
 export interface IPropertyNode extends IAlphaNode {
   alias: string;
@@ -27,7 +22,7 @@ export function property(
   defines: Map<string, any>,
   scope: Map<string, any>,
   patterns: IPattern[],
-  cs: IConstraint[]
+  cs: IConstraint[],
 ): IPropertyNodeBeforeCompile {
   const constraint = cs[node.c];
   const alias = node.alias;

@@ -1,19 +1,10 @@
 import { Context, MatchesContext } from "../context";
-import { INode, IBetaNode, INodeWithPatterns } from "../runtime/nodes/types";
+import { IBetaNode } from "../runtime/nodes/types";
+import { INode, INodeWithPatterns } from "../runtime/nodes/INode";
 import { Args } from "./Args";
-import {
-  base_assert,
-  base_modify,
-  base_retract,
-  propagate_dispose,
-} from "./Funs";
+import { base_assert, base_modify, base_retract } from "./Funs";
 import { FactObject, WorkingMemory } from "../WorkingMemory";
-import {
-  memory_clear,
-  memory_push,
-  memory_get,
-  memory_remove,
-} from "./misc/memory";
+import { memory_clear, memory_push, memory_get, memory_remove } from "./misc/memory";
 
 export function dispose(nodes: INode[], n: number) {
   const node = nodes[n] as IBetaNode;
@@ -34,33 +25,20 @@ export function dispose(nodes: INode[], n: number) {
 // 	node.rightTuples.clear();
 // 	propagate_dispose(node, context);
 // }
-
-export const assert: Args<FactObject> = function (nodes, n, context, wm) {
+export const wrap = (next: Args<FactObject>): Args<FactObject> => (nodes, n, context, wm) => {
   const node = nodes[n];
-  for (const [outNode, paths] of node.nodes.entries()) {
-    base_assert(nodes, outNode, context, wm);
+  for (const [outNode] of node.nodes.entries()) {
+    next(nodes, outNode, context, wm);
   }
 };
 
-export const modify: Args<FactObject> = function (nodes, n, context, wm) {
-  const node = nodes[n];
-  for (const [outNode, paths] of node.nodes.entries()) {
-    base_modify(nodes, outNode, context, wm);
-  }
-};
+export const assert: Args<FactObject> = wrap(base_assert);
 
-export const retract: Args<FactObject> = function (nodes, n, context, wm) {
-  const node = nodes[n];
-  for (const [outNode, paths] of node.nodes.entries()) {
-    base_retract(nodes, outNode, context, wm);
-  }
-};
+export const modify: Args<FactObject> = wrap(base_modify);
 
-export function __addToLeftMemory(
-  nodes: INode[],
-  n: number,
-  context: Context
-): boolean {
+export const retract: Args<FactObject> = wrap(base_retract);
+
+export function __addToLeftMemory(nodes: INode[], n: number, context: Context): boolean {
   const node = nodes[n] as IBetaNode;
   const hashCode = context.hashCode,
     lm = node.leftMemory;
@@ -77,7 +55,7 @@ export function __addToMemoryMatches(
   n: number,
   rightContext: Context,
   leftContext: Context,
-  createdContext: Context
+  createdContext: Context,
 ): Context {
   const node = nodes[n] as IBetaNode;
   const rightFactId = rightContext.hashCode,
@@ -110,19 +88,13 @@ export function propagateFromLeft<TObject extends FactObject>(
   n: number,
   context: Context,
   rc: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   assert(
     nodes,
     n,
-    __addToMemoryMatches(
-      nodes,
-      n,
-      rc,
-      context,
-      context.clone(undefined, undefined, context.match.merge(rc.match))
-    ),
-    wm
+    __addToMemoryMatches(nodes, n, rc, context, context.clone(undefined, undefined, context.match.merge(rc.match))),
+    wm,
   );
 }
 
@@ -130,7 +102,7 @@ export function assert_left<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ): void {
   __addToLeftMemory(nodes, n, context);
   const node = nodes[n] as IBetaNode;
@@ -140,11 +112,7 @@ export function assert_left<TObject extends FactObject>(
   });
 }
 
-export function __addToRightMemory(
-  nodes: INode[],
-  n: number,
-  context: Context
-) {
+export function __addToRightMemory(nodes: INode[], n: number, context: Context) {
   const node = nodes[n] as IBetaNode;
   const hashCode = context.hashCode,
     rm = node.rightMemory;
@@ -161,19 +129,13 @@ function propagateFromRight<TObject extends FactObject>(
   n: number,
   context: Context,
   lc: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   assert(
     nodes,
     n,
-    __addToMemoryMatches(
-      nodes,
-      n,
-      context,
-      lc,
-      lc.clone(undefined, undefined, lc.match.merge(context.match))
-    ),
-    wm
+    __addToMemoryMatches(nodes, n, context, lc, lc.clone(undefined, undefined, lc.match.merge(context.match))),
+    wm,
   );
 }
 
@@ -181,7 +143,7 @@ export function assert_right<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   __addToRightMemory(nodes, n, context);
   const node = nodes[n] as IBetaNode;
@@ -191,11 +153,7 @@ export function assert_right<TObject extends FactObject>(
   });
 }
 
-export function removeFromLeftMemory(
-  nodes: INode[],
-  n: number,
-  context: Context
-) {
+export function removeFromLeftMemory(nodes: INode[], n: number, context: Context) {
   const node = nodes[n] as IBetaNode;
   const hashCode = context.hashCode;
   const tuple = node.leftMemory[hashCode] || null;
@@ -217,7 +175,7 @@ export function propagateRetractModifyFromLeft<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const rightMatches = context.rightMatches!;
 
@@ -235,21 +193,15 @@ function propagateAssertModifyFromLeft<TObject extends FactObject>(
     [id: string]: Context;
   },
   rm: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const factId = rm.hashCode;
   if (factId in rightMatches) {
     modify(
       nodes,
       n,
-      __addToMemoryMatches(
-        nodes,
-        n,
-        rm,
-        context,
-        context.clone(undefined, undefined, context.match.merge(rm.match))
-      ),
-      wm
+      __addToMemoryMatches(nodes, n, rm, context, context.clone(undefined, undefined, context.match.merge(rm.match))),
+      wm,
     );
   } else {
     propagateFromLeft(nodes, n, context, rm, wm);
@@ -260,7 +212,7 @@ export function modify_left<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const previousContext = removeFromLeftMemory(nodes, n, context).data;
   __addToLeftMemory(nodes, n, context);
@@ -278,17 +230,13 @@ export function modify_left<TObject extends FactObject>(
 
         rightMatches,
         m.data,
-        wm
+        wm,
       );
     });
   }
 }
 
-export function removeFromRightMemory(
-  nodes: INode[],
-  n: number,
-  context: Context
-) {
+export function removeFromRightMemory(nodes: INode[], n: number, context: Context) {
   const node = nodes[n] as IBetaNode;
   const hashCode = context.hashCode;
   const tuple = node.rightMemory[hashCode] || null;
@@ -312,7 +260,7 @@ export function propagateRetractModifyFromRight<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const leftMatches = context.leftMatches!;
 
@@ -330,21 +278,15 @@ function propagateAssertModifyFromRight<TObject extends FactObject>(
     [id: string]: Context;
   },
   lm: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const factId = lm.hashCode;
   if (factId in leftMatches) {
     modify(
       nodes,
       n,
-      __addToMemoryMatches(
-        nodes,
-        n,
-        context,
-        lm,
-        context.clone(undefined, undefined, lm.match.merge(context.match))
-      ),
-      wm
+      __addToMemoryMatches(nodes, n, context, lm, context.clone(undefined, undefined, lm.match.merge(context.match))),
+      wm,
     );
   } else {
     propagateFromRight(nodes, n, context, lm, wm);
@@ -355,7 +297,7 @@ export function modify_right<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const previousContext = removeFromRightMemory(nodes, n, context).data;
   __addToRightMemory(nodes, n, context);
@@ -373,7 +315,7 @@ export function modify_right<TObject extends FactObject>(
 
         leftMatches,
         m.data,
-        wm
+        wm,
       );
     });
   }
@@ -383,7 +325,7 @@ export function retract_left<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   context = removeFromLeftMemory(nodes, n, context).data;
   const rightMatches = context.rightMatches!;
@@ -398,7 +340,7 @@ export function retract_right<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   context = removeFromRightMemory(nodes, n, context).data;
   const leftMatches = context.leftMatches!;

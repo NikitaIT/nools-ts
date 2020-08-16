@@ -5,18 +5,12 @@ export interface Hash {
 }
 
 export interface ICompileOptions {
+  name?: string;
   define?: Map<string, any>;
   scope?: Map<string, any>;
 }
 export interface IOrConstraint
-  extends Array<
-    | string
-    | ISimpleConstraint
-    | INomalConstraint
-    | INotConstraint
-    | IFromstraint
-    | IOrConstraint
-  > {
+  extends Array<string | ISimpleConstraint | INomalConstraint | INotConstraint | IFromstraint | IOrConstraint> {
   [0]: "or";
 }
 
@@ -55,13 +49,7 @@ export interface IRuleContextOptions {
 
 export interface IRuleContext {
   action: string;
-  constraints: (
-    | ISimpleConstraint
-    | INomalConstraint
-    | INotConstraint
-    | IFromstraint
-    | IOrConstraint
-  )[];
+  constraints: (ISimpleConstraint | INomalConstraint | INotConstraint | IFromstraint | IOrConstraint)[];
   name: string;
   options: IRuleContextOptions;
 }
@@ -115,21 +103,16 @@ export interface RuleData {
   af: boolean;
   pt: IPattern;
 }
-export interface GroupedRuleData<
-  T extends AgendaGroupTag | null = AgendaGroupTag
-> {
+export interface GroupedRuleData<T extends AgendaGroupTag | null = AgendaGroupTag> {
   g: AgendaGroupTag | T;
 }
-export type ActionRuleValidCodeString = Tagged<
-  string,
-  "ActionRuleValidCodeString"
->;
+export type ActionRuleValidCodeString = Tagged<string, "ActionRuleValidCodeString">;
 export interface ActionRuleData<IsValid extends boolean> {
   action: IsValid extends true ? ActionRuleValidCodeString : string;
 }
 
 export interface IFiredRule {
-  fire(flow: Flow, match: Match): Promise<{}>;
+  fire(flow: Flow, match: Match): Promise<unknown>;
 }
 
 export type IRule = RuleData & IFiredRule;

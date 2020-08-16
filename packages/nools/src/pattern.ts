@@ -1,15 +1,4 @@
-import {
-  Hash,
-  IContext,
-  ISimpleConstraint,
-  INomalConstraint,
-  INotConstraint,
-  IFromstraint,
-  IOrConstraint,
-  ICondition,
-  IPatternOptions,
-  IScopedCondition,
-} from "./interfaces";
+import { Hash, ICondition, IPatternOptions, IScopedCondition } from "./interfaces";
 import { getIdentifiers } from "./constraint-matcher";
 import { InitialFact } from "./facts/initial";
 import { parseConstraint as baseParseConstraint } from "./compile/parser/constraint";
@@ -31,16 +20,7 @@ import {
   create_reference_lte_constraint,
 } from "./constraint";
 import { IFromConstraint } from "./constraint";
-import {
-  isNumber,
-  isEmpty,
-  mixin,
-  isHash,
-  isEqual,
-  flattenDeep,
-  isString,
-  isFunction,
-} from "@nools/lodash-port";
+import { isNumber, isEmpty, mixin, isHash, isEqual, flattenDeep, isString, isFunction } from "@nools/lodash-port";
 
 export enum patternType {
   composite,
@@ -71,15 +51,15 @@ export interface IFromPattern extends IObjectPattern {
   from: IFromConstraint;
 }
 
-export interface IExistsPattern extends IObjectPattern {}
+export type IExistsPattern = IObjectPattern;
 
-export interface IFromExistsPattern extends IFromPattern {}
+export type IFromExistsPattern = IFromPattern;
 
-export interface IFromNotPattern extends IFromPattern {}
+export type IFromNotPattern = IFromPattern;
 
-export interface INotPattern extends IObjectPattern {}
+export type INotPattern = IObjectPattern;
 
-export interface IInitialFactPattern extends IObjectPattern {}
+export type IInitialFactPattern = IObjectPattern;
 
 export interface ICompositePattern extends IPattern {
   id: number;
@@ -93,15 +73,7 @@ const definedFuncs = {
     return new Date();
   },
 
-  Date: function (
-    y?: number,
-    m?: number,
-    d?: number,
-    h?: number,
-    min?: number,
-    s?: number,
-    ms?: number
-  ) {
+  Date: function (y?: number, m?: number, d?: number, h?: number, min?: number, s?: number, ms?: number) {
     const date = new Date();
     if (isNumber(y)) {
       date.setFullYear(y);
@@ -153,7 +125,7 @@ function toConstraints(
   condition: ICondition,
   options: {
     alias: string;
-  } & IPatternOptions
+  } & IPatternOptions,
 ) {
   const alias = options.alias;
   if (typeof condition === "function") {
@@ -165,9 +137,7 @@ function toConstraints(
   const rule2 = condition[2];
 
   if (rule2 === "and") {
-    ret = ret
-      .concat(toConstraints(condition[0] as any, options))
-      .concat(toConstraints(condition[1] as any, options));
+    ret = ret.concat(toConstraints(condition[0] as any, options)).concat(toConstraints(condition[1] as any, options));
   } else if (
     rule2 === "composite" ||
     rule2 === "or" ||
@@ -196,63 +166,63 @@ function toConstraints(
         ret.push(
           isReference
             ? create_reference_equality_constraint(alias, condition, options)
-            : create_equality_constraint(alias, condition, options)
+            : create_equality_constraint(alias, condition, options),
         );
         break;
       case "seq":
         ret.push(
           isReference
             ? create_reference_equality_constraint(alias, condition, options)
-            : create_equality_constraint(alias, condition, options)
+            : create_equality_constraint(alias, condition, options),
         );
         break;
       case "neq":
         ret.push(
           isReference
             ? create_reference_inequality_constraint(alias, condition, options)
-            : create_inequality_constraint(alias, condition, options)
+            : create_inequality_constraint(alias, condition, options),
         );
         break;
       case "sneq":
         ret.push(
           isReference
             ? create_reference_inequality_constraint(alias, condition, options)
-            : create_inequality_constraint(alias, condition, options)
+            : create_inequality_constraint(alias, condition, options),
         );
         break;
       case "gt":
         ret.push(
           isReference
             ? create_reference_gt_constraint(alias, condition, options)
-            : create_comparison_constraint(alias, condition, options)
+            : create_comparison_constraint(alias, condition, options),
         );
         break;
       case "gte":
         ret.push(
           isReference
             ? create_reference_gte_constraint(alias, condition, options)
-            : create_comparison_constraint(alias, condition, options)
+            : create_comparison_constraint(alias, condition, options),
         );
         break;
       case "lt":
         ret.push(
           isReference
             ? create_reference_lt_constraint(alias, condition, options)
-            : create_comparison_constraint(alias, condition, options)
+            : create_comparison_constraint(alias, condition, options),
         );
         break;
       case "lte":
         ret.push(
           isReference
             ? create_reference_lte_constraint(alias, condition, options)
-            : create_comparison_constraint(alias, condition, options)
+            : create_comparison_constraint(alias, condition, options),
         );
         break;
       default:
         ret.push(
           isReference
             ? create_reference_constraint(alias, condition, options)
-            : create_comparison_constraint(alias, condition, options)
+            : create_comparison_constraint(alias, condition, options),
         );
     }
   }
@@ -268,12 +238,10 @@ function _object_pattern(
   conditions: ICondition,
   store: Hash,
   options: IPatternOptions,
-  cs: IConstraint[]
+  cs: IConstraint[],
 ): IObjectPattern {
   // this.conditions = conditions;
-  let constraints: IConstraint[] = [
-    create_object_constraint(alias, cls, class_type),
-  ];
+  let constraints: IConstraint[] = [create_object_constraint(alias, cls, class_type)];
   const constrnts = toConstraints(conditions, mixin({ alias: alias }, options));
   if (constrnts.length) {
     constraints = constraints.concat(constrnts);
@@ -309,7 +277,7 @@ export function initial_fact_pattern(cs: IConstraint[]) {
     [] as any,
     {},
     {} as IPatternOptions,
-    cs
+    cs,
   );
 }
 
@@ -320,18 +288,9 @@ function object_pattern(
   conditions: ICondition,
   store: Hash,
   options: IPatternOptions,
-  cs: IConstraint[]
+  cs: IConstraint[],
 ) {
-  return _object_pattern(
-    patternType.object,
-    cls,
-    class_type,
-    alias,
-    conditions,
-    store,
-    options,
-    cs
-  );
+  return _object_pattern(patternType.object, cls, class_type, alias, conditions, store, options, cs);
 }
 
 function _from_pattern(
@@ -343,29 +302,14 @@ function _from_pattern(
   store: Hash,
   from: ICondition,
   options: IPatternOptions,
-  cs: IConstraint[]
+  cs: IConstraint[],
 ): IFromPattern {
-  return mixin(
-    _object_pattern(
-      type,
-      cls,
-      class_type,
-      alias,
-      conditions,
-      store,
-      options,
-      cs
-    ),
-    {
-      from: create_from_constraint(alias, from, options),
-    }
-  );
+  return mixin(_object_pattern(type, cls, class_type, alias, conditions, store, options, cs), {
+    from: create_from_constraint(alias, from, options),
+  });
 }
 
-export function composite_pattern(
-  left: IPattern,
-  right: IPattern
-): ICompositePattern {
+export function composite_pattern(left: IPattern, right: IPattern): ICompositePattern {
   return {
     tp: patternType.composite,
     id: ++id,
@@ -463,16 +407,13 @@ function getParamType(type: any, scope = {} as any) {
   }
 }
 
-function parsePattern_or(
-  condition: ICondition & IScopedCondition,
-  cs: IConstraint[]
-): IPattern[] {
+function parsePattern_or(condition: ICondition & IScopedCondition, cs: IConstraint[]): IPattern[] {
   condition.shift();
   return flattenDeep(
     condition.map((cond: ICondition & IScopedCondition) => {
       cond.scope = (condition as any).scope;
       return pattern(cond, cs);
-    })
+    }),
   );
 }
 
@@ -492,7 +433,7 @@ function from_not_pattern(
   store: Hash,
   from: ICondition,
   options: IPatternOptions,
-  cs: IConstraint[]
+  cs: IConstraint[],
 ) {
   return _from_pattern(
     patternType.from_not,
@@ -503,7 +444,7 @@ function from_not_pattern(
     store,
     from,
     options,
-    cs
+    cs,
   ) as IFromNotPattern;
 }
 
@@ -514,24 +455,12 @@ function not_pattern(
   conditions: ICondition,
   store: Hash,
   options: IPatternOptions,
-  cs: IConstraint[]
+  cs: IConstraint[],
 ) {
-  return _object_pattern(
-    patternType.not,
-    cls,
-    class_type,
-    alias,
-    conditions,
-    store,
-    options,
-    cs
-  ) as INotPattern;
+  return _object_pattern(patternType.not, cls, class_type, alias, conditions, store, options, cs) as INotPattern;
 }
 
-function parsePattern_not(
-  condition: ICondition & IScopedCondition,
-  cs: IConstraint[]
-): [IPattern] {
+function parsePattern_not(condition: ICondition & IScopedCondition, cs: IConstraint[]): [IPattern] {
   condition.shift();
   condition = normailizeConstraint(condition);
   if (condition[4] && condition[4].from) {
@@ -544,7 +473,7 @@ function parsePattern_not(
         condition[3] || {},
         parseConstraint(condition[4].from),
         { scope: condition.scope, pattern: condition[2] as string },
-        cs
+        cs,
       ),
     ];
   } else {
@@ -556,7 +485,7 @@ function parsePattern_not(
         parseConstraint(condition[2] || "true"),
         condition[3] || {},
         { scope: condition.scope, pattern: condition[2] as string },
-        cs
+        cs,
       ),
     ];
   }
@@ -570,7 +499,7 @@ function from_exists_pattern(
   store: Hash,
   from: ICondition,
   options: IPatternOptions,
-  cs: IConstraint[]
+  cs: IConstraint[],
 ) {
   return _from_pattern(
     patternType.from_exists,
@@ -581,7 +510,7 @@ function from_exists_pattern(
     store,
     from,
     options,
-    cs
+    cs,
   ) as IFromExistsPattern;
 }
 
@@ -592,24 +521,12 @@ function exists_pattern(
   conditions: ICondition,
   store: Hash,
   options: IPatternOptions,
-  cs: IConstraint[]
+  cs: IConstraint[],
 ) {
-  return _object_pattern(
-    patternType.exists,
-    cls,
-    class_type,
-    alias,
-    conditions,
-    store,
-    options,
-    cs
-  ) as IExistsPattern;
+  return _object_pattern(patternType.exists, cls, class_type, alias, conditions, store, options, cs) as IExistsPattern;
 }
 
-function parsePattern_exists(
-  condition: ICondition & IScopedCondition,
-  cs: IConstraint[]
-): [IPattern] {
+function parsePattern_exists(condition: ICondition & IScopedCondition, cs: IConstraint[]): [IPattern] {
   condition.shift();
   condition = normailizeConstraint(condition);
   if (condition[4] && condition[4].from) {
@@ -622,7 +539,7 @@ function parsePattern_exists(
         condition[3] || {},
         parseConstraint(condition[4].from),
         { scope: condition.scope, pattern: condition[2] },
-        cs
+        cs,
       ),
     ];
   } else {
@@ -634,7 +551,7 @@ function parsePattern_exists(
         parseConstraint(condition[2] || "true"),
         condition[3] || {},
         { scope: condition.scope, pattern: condition[2] },
-        cs
+        cs,
       ),
     ];
   }
@@ -648,24 +565,14 @@ function from_pattern(
   store: Hash,
   from: ICondition,
   options: IPatternOptions,
-  cs: IConstraint[]
+  cs: IConstraint[],
 ) {
-  return _from_pattern(
-    patternType.from,
-    cls,
-    class_type,
-    alias,
-    conditions,
-    store,
-    from,
-    options,
-    cs
-  );
+  return _from_pattern(patternType.from, cls, class_type, alias, conditions, store, from, options, cs);
 }
 
 function parsePattern_def(
   condition: ICondition & IScopedCondition,
-  cs: IConstraint[]
+  cs: IConstraint[],
 ): [IFromPattern | IObjectPattern] {
   if (typeof condition === "function") {
     return [condition] as any;
@@ -681,7 +588,7 @@ function parsePattern_def(
         condition[3] || {},
         parseConstraint(condition[4].from),
         { scope: condition.scope, pattern: condition[2] },
-        cs
+        cs,
       ),
     ];
   } else {
@@ -693,16 +600,13 @@ function parsePattern_def(
         parseConstraint(condition[2] || "true"),
         condition[3] || {},
         { scope: condition.scope, pattern: condition[2] },
-        cs
+        cs,
       ),
     ];
   }
 }
 
-export function pattern(
-  condition: ICondition & IScopedCondition,
-  cs: IConstraint[]
-): IPattern[] {
+export function pattern(condition: ICondition & IScopedCondition, cs: IConstraint[]): IPattern[] {
   switch (condition[0] as string) {
     case "or":
       return parsePattern_or(condition, cs);

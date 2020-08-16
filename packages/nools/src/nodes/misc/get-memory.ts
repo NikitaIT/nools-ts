@@ -89,11 +89,7 @@ const enum RangeTuples {
   lte = "lte",
 }
 
-function getRangeTuples(
-  op: RangeTuples,
-  currEntry: Table,
-  val: IEntry
-): ITuple[] {
+function getRangeTuples(op: RangeTuples, currEntry: Table, val: IEntry): ITuple[] {
   const findByOp = {
     [RangeTuples.gt]: currEntry.findGT,
     [RangeTuples.gte]: currEntry.findGTE,
@@ -129,11 +125,7 @@ function mergePossibles(tuples: ITuple[], tl: number) {
   }
 }
 
-export function getMemory(
-  entry: TupleEntry,
-  factHash: Map<string, Fact>,
-  indexes: IIndex[]
-) {
+export function getMemory(entry: TupleEntry, factHash: Map<string, Fact>, indexes: IIndex[]) {
   const l = indexes.length;
   let intersected = false;
   let tables = entry.tables;
@@ -164,9 +156,7 @@ export function getMemory(
     } else if (!intersected) {
       rl = (ret = getRangeTuples(op as RangeTuples, currEntry, val)).length;
       intersected = true;
-    } else if (
-      (tl = (tuples = getRangeTuples(op as RangeTuples, currEntry, val)).length)
-    ) {
+    } else if ((tl = (tuples = getRangeTuples(op as RangeTuples, currEntry, val)).length)) {
       mergePossibles(tuples, tl);
     } else {
       ret = tuples;

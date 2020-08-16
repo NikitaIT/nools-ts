@@ -1,4 +1,4 @@
-import { parse_rules } from "./compile/index";
+import { compile as parse_rules } from "./compile/index";
 
 import { compile as runtime_compile } from "./runtime/compile";
 

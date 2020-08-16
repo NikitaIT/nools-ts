@@ -108,7 +108,7 @@ function __index(m: IMemory, node: ITuple): void {
     const index = indexes[i];
     const val = index[2](factHash);
     const path = index[0];
-    let tables = entry.tables;
+    const tables = entry.tables;
     if (!tables.has(path)) {
       tables.set(path, new Table());
     }
@@ -152,19 +152,8 @@ function __createIndexTree(m: IMemory): void {
   table.set(indexes[0][0], new Table());
 }
 
-export function addIndex(
-  m: IMemory,
-  primary: string,
-  lookup: string,
-  op: string
-): void {
-  m.indexes.push([
-    primary,
-    lookup,
-    plucker(primary) as any,
-    plucker(lookup) as any,
-    op || "eq",
-  ]);
+export function addIndex(m: IMemory, primary: string, lookup: string, op: string): void {
+  m.indexes.push([primary, lookup, plucker(primary) as any, plucker(lookup) as any, op || "eq"]);
   m.indexes.sort(function (a, b) {
     const aOp = a[4],
       bOp = b[4];

@@ -8,11 +8,7 @@ import { true_constraint } from "./true_constraint";
 
 const funcs = new Map<
   constraintType,
-  (
-    constraint: IConstraint,
-    defines: Map<string, any>,
-    scope: Map<string, any>
-  ) => IConstraint
+  (constraint: IConstraint, defines: Map<string, any>, scope: Map<string, any>) => IConstraint
 >([
   [constraintType.true, true_constraint],
   [constraintType.equality, equality],
@@ -33,11 +29,7 @@ const funcs = new Map<
   [constraintType.reference, reference],
 ] as any);
 
-export function cst(
-  constraint: IConstraint,
-  defines: Map<string, any>,
-  scope: Map<string, any>
-) {
+export function cst(constraint: IConstraint, defines: Map<string, any>, scope: Map<string, any>) {
   const fun = funcs.get(constraint.tp)!;
   return fun(constraint, defines, scope);
 }

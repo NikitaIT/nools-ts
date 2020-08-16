@@ -2,19 +2,15 @@ import { conflictResolution } from "./conflict";
 import { Flow } from "./flow";
 import { IInsert } from "./interfaces";
 import { InitialFact } from "./facts/initial";
-import { IRootNode } from "./runtime/nodes/types";
+import { IRootNode } from "./runtime/nodes/INode";
 
 export class FlowContainer {
   private __defined = new Map<string, any>();
-  private root: IRootNode;
-  private conflictResolutionStrategy: (a: IInsert, b: IInsert) => number;
-  private defined: Map<string, any>;
-  private scope: Map<string, any>;
-  constructor(
-    data: IRootNode,
-    defined: Map<string, any>,
-    scope: Map<string, any>
-  ) {
+  private readonly root: IRootNode;
+  private readonly conflictResolutionStrategy: (a: IInsert, b: IInsert) => number;
+  private readonly defined: Map<string, any>;
+  private readonly scope: Map<string, any>;
+  constructor(data: IRootNode, defined: Map<string, any>, scope: Map<string, any>) {
     this.defined = defined;
     this.scope = scope;
     this.root = data;
@@ -36,12 +32,7 @@ export class FlowContainer {
   }
 
   getSession(...facts: any[]) {
-    const flow = new Flow(
-      this.root,
-      this.conflictResolutionStrategy,
-      this.defined,
-      this.scope
-    );
+    const flow = new Flow(this.root, this.conflictResolutionStrategy, this.defined, this.scope);
     flow.assert(new InitialFact());
     facts.forEach((fact) => {
       flow.assert(fact);

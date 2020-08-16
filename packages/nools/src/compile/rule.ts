@@ -17,7 +17,7 @@ export function createRule(
   options: IRuleContextOptions,
   conditions: ICondition[],
   cs: IConstraint[],
-  cb: string
+  cb: string,
 ): CreatedRule[] {
   let isRules = conditions.every(isArray);
   if (isRules && conditions.length === 1) {
@@ -26,26 +26,18 @@ export function createRule(
   }
   const scope = options.scope || new Map<string, any>();
   (conditions as any).scope = scope;
-  const createRule = (compositePattern: IPattern) =>
-    _create_rule(name, options, compositePattern, cb);
+  const createRule = (compositePattern: IPattern) => _create_rule(name, options, compositePattern, cb);
   if (isRules) {
     const patterns = conditions.reduce((patterns, condition) => {
       condition.scope = scope;
-      return pattern(condition as ICondition & IScopedCondition, cs).reduce(
-        _mergePatterns,
-        patterns
-      );
+      return pattern(condition as ICondition & IScopedCondition, cs).reduce(_mergePatterns, patterns);
     }, [] as IPattern[][]);
     return patterns.map(toRulesFromRulesPatterns(createRule));
   } else {
-    return pattern(conditions as ICondition & IScopedCondition, cs).map(
-      createRule
-    );
+    return pattern(conditions as ICondition & IScopedCondition, cs).map(createRule);
   }
 }
-function toRulesFromRulesPatterns(
-  createRule: (compositePattern: IPattern) => any
-) {
+function toRulesFromRulesPatterns(createRule: (compositePattern: IPattern) => any) {
   return (patterns: IPattern[]) => {
     const compositePattern = patterns
       .filter((patt, idx) => {
@@ -57,11 +49,7 @@ function toRulesFromRulesPatterns(
     return createRule(compositePattern);
   };
 }
-function _mergePatterns(
-  patterns: IPattern[][],
-  patt: IPattern | IPattern[],
-  i: number
-) {
+function _mergePatterns(patterns: IPattern[][], patt: IPattern | IPattern[], i: number) {
   // [pattern], [pattern], ...  in arrays of length 1
   // we wish to build a single array in order of lhs progression
   if (isArray(patt)) {
@@ -86,20 +74,13 @@ function _mergePatterns(
   }
   return patterns;
 }
-export type CreatedRule = RuleData &
-  GroupedRuleData<null> &
-  ActionRuleData<false>;
-function _create_rule(
-  name: string,
-  options: IRuleContextOptions,
-  pattern: IPattern,
-  action: string
-): CreatedRule {
+export type CreatedRule = RuleData & GroupedRuleData<null> & ActionRuleData<false>;
+function _create_rule(name: string, options: IRuleContextOptions, pattern: IPattern, action: string): CreatedRule {
   let agendaGroup: AgendaGroupTag | null = null;
   let autoFocus = false;
   if (options.agendaGroup) {
     agendaGroup = options.agendaGroup;
-    autoFocus = isBoolean(options.autoFocus) ? !!options.autoFocus : false;
+    autoFocus = isBoolean(options.autoFocus) ? options.autoFocus : false;
   }
   return {
     n: name,

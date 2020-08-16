@@ -16,12 +16,7 @@ function factRecency(a: IInsert, b: IInsert) {
     bMatchRecency = b.match.recency,
     aLength = aMatchRecency.length - 1,
     bLength = bMatchRecency.length - 1;
-  while (
-    aMatchRecency[i] === bMatchRecency[i] &&
-    i < aLength &&
-    i < bLength &&
-    i++
-  ) {}
+  while (aMatchRecency[i] === bMatchRecency[i] && i < aLength && i < bLength && i++) {}
   let ret = aMatchRecency[i] - bMatchRecency[i];
   if (!ret) {
     ret = aLength - bLength;
@@ -65,8 +60,4 @@ function strategy(...strats: { (a: IInsert, b: IInsert): number }[]) {
   };
 }
 
-export const conflictResolution = strategy(
-  salience,
-  activationRecency,
-  factRecencyInverse
-);
+export const conflictResolution = strategy(salience, activationRecency, factRecencyInverse);

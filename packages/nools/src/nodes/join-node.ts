@@ -1,5 +1,6 @@
 import { Context } from "../context";
-import { INode, IJoinNode, INodeWithPatterns } from "../runtime/nodes/types";
+import { IJoinNode } from "../runtime/nodes/types";
+import { INode, INodeWithPatterns } from "../runtime/nodes/INode";
 import {
   __addToLeftMemory,
   assert,
@@ -20,23 +21,12 @@ function propagateFromLeft<TObject extends FactObject>(
   n: number,
   context: Context,
   rm: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const node = nodes[n] as IJoinNode;
   const mr = node.constraint.match(context, rm);
   if (mr.isMatch) {
-    assert(
-      nodes,
-      n,
-      __addToMemoryMatches(
-        nodes,
-        n,
-        rm,
-        context,
-        context.clone(undefined, undefined, mr)
-      ),
-      wm
-    );
+    assert(nodes, n, __addToMemoryMatches(nodes, n, rm, context, context.clone(undefined, undefined, mr)), wm);
   }
   // return this;
 }
@@ -45,7 +35,7 @@ export function assert_left<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   __addToLeftMemory(nodes, n, context);
   const node = nodes[n] as IJoinNode;
@@ -60,23 +50,12 @@ function propagateFromRight<TObject extends FactObject>(
   n: number,
   context: Context,
   lm: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const node = nodes[n] as IJoinNode;
   const mr = node.constraint.match(lm, context);
   if (mr.isMatch) {
-    assert(
-      nodes,
-      n,
-      __addToMemoryMatches(
-        nodes,
-        n,
-        context,
-        lm,
-        context.clone(undefined, undefined, mr)
-      ),
-      wm
-    );
+    assert(nodes, n, __addToMemoryMatches(nodes, n, context, lm, context.clone(undefined, undefined, mr)), wm);
   }
   // return node;
 }
@@ -85,7 +64,7 @@ export function assert_right<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   __addToRightMemory(nodes, n, context);
   const node = nodes[n] as IJoinNode;
@@ -101,7 +80,7 @@ function propagateAssertModifyFromLeft<TObject extends FactObject>(
   context: Context,
   rightMatches: { [factid: string]: Context },
   rm: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const node = nodes[n] as IJoinNode;
   const factId = rm.hashCode;
@@ -111,18 +90,7 @@ function propagateAssertModifyFromLeft<TObject extends FactObject>(
     if (!mrIsMatch) {
       retract(nodes, n, rightMatches[factId].clone(), wm);
     } else {
-      modify(
-        nodes,
-        n,
-        __addToMemoryMatches(
-          nodes,
-          n,
-          rm,
-          context,
-          context.clone(undefined, undefined, mr)
-        ),
-        wm
-      );
+      modify(nodes, n, __addToMemoryMatches(nodes, n, rm, context, context.clone(undefined, undefined, mr)), wm);
     }
   } else {
     propagateFromLeft(nodes, n, context, rm, wm);
@@ -133,7 +101,7 @@ export function modify_left<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const previousContext = removeFromLeftMemory(nodes, n, context).data;
   __addToLeftMemory(nodes, n, context);
@@ -144,14 +112,7 @@ export function modify_left<TObject extends FactObject>(
   } else {
     const rightMatches = previousContext.rightMatches!;
     rm.forEach((m) => {
-      propagateAssertModifyFromLeft(
-        nodes,
-        n,
-        context,
-        rightMatches,
-        m.data,
-        wm
-      );
+      propagateAssertModifyFromLeft(nodes, n, context, rightMatches, m.data, wm);
     });
   }
 }
@@ -162,7 +123,7 @@ function propagateAssertModifyFromRight<TObject extends FactObject>(
   context: Context,
   leftMatches: { [factid: string]: Context },
   lm: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const factId = lm.hashCode;
   if (factId in leftMatches) {
@@ -172,18 +133,7 @@ function propagateAssertModifyFromRight<TObject extends FactObject>(
     if (!mrIsMatch) {
       retract(nodes, n, leftMatches[factId].clone(), wm);
     } else {
-      modify(
-        nodes,
-        n,
-        __addToMemoryMatches(
-          nodes,
-          n,
-          context,
-          lm,
-          context.clone(undefined, undefined, mr)
-        ),
-        wm
-      );
+      modify(nodes, n, __addToMemoryMatches(nodes, n, context, lm, context.clone(undefined, undefined, mr)), wm);
     }
   } else {
     propagateFromRight(nodes, n, context, lm, wm);
@@ -194,7 +144,7 @@ export function modify_right<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const previousContext = removeFromRightMemory(nodes, n, context).data;
   __addToRightMemory(nodes, n, context);
@@ -205,14 +155,7 @@ export function modify_right<TObject extends FactObject>(
   } else {
     const leftMatches = previousContext.leftMatches!;
     lm.forEach((m) => {
-      propagateAssertModifyFromRight(
-        nodes,
-        n,
-        context,
-        leftMatches,
-        m.data,
-        wm
-      );
+      propagateAssertModifyFromRight(nodes, n, context, leftMatches, m.data, wm);
     });
   }
 }

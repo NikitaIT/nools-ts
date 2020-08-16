@@ -4,11 +4,7 @@ import { removeDups } from "./lang";
 
 function getProps(val: (string | string[])[]): string[] {
   const arr: (string | string[])[] = val.map((val) => {
-    return isArray(val)
-      ? isArray(val[0])
-        ? getProps(val)
-        : val.reverse().join(".")
-      : val;
+    return isArray(val) ? (isArray(val[0]) ? getProps(val) : val.reverse().join(".")) : val;
   });
   return flattenDeep(arr).filter((v) => {
     return !!v;
@@ -35,9 +31,7 @@ export function getIdentifiers(rule: ICondition) {
     //its an identifier so stop
     return [rule[0]] as string[];
   } else if (rule2 === "function") {
-    ret = ret
-      .concat(getIdentifiers(rule[0] as ICondition))
-      .concat(getIdentifiers(rule[1] as ICondition));
+    ret = ret.concat(getIdentifiers(rule[0] as ICondition)).concat(getIdentifiers(rule[1] as ICondition));
   } else if (
     rule2 !== "string" &&
     rule2 !== "number" &&
@@ -79,7 +73,7 @@ function toJs(
   scope: Map<string, any>,
   alias?: string,
   equality = false,
-  wrap?: (src: string) => string
+  wrap?: (src: string) => string,
 ) {
   /*jshint evil:true*/
   const js = parse(rule);
@@ -117,11 +111,7 @@ function toJs(
   return new Function("scope", closureBody)(scope);
 }
 
-export function getMatcher(
-  rule: ICondition,
-  options = {} as IPatternOptions,
-  equality = false
-) {
+export function getMatcher(rule: ICondition, options = {} as IPatternOptions, equality = false) {
   return toJs(rule, options.scope, options.alias, equality, function (src) {
     return `!!(${src})`;
   });
@@ -150,9 +140,7 @@ function __getProperties(rule: ICondition) {
       //at the bottom
       ret = [rule[0]];
     } else {
-      ret = __getProperties(rule[1] as ICondition).concat(
-        __getProperties(rule[0] as ICondition)
-      );
+      ret = __getProperties(rule[1] as ICondition).concat(__getProperties(rule[0] as ICondition));
     }
   }
   return ret;
@@ -161,11 +149,7 @@ function __getProperties(rule: ICondition) {
 export function getIndexableProperties(rule: ICondition): string[] {
   if (rule[2] === "composite") {
     return getIndexableProperties(rule[0] as ICondition);
-  } else if (
-    /^(\w+(\['[^']*'])*) *([!=]==?|[<>]=?) (\w+(\['[^']*'])*)$/.test(
-      parse(rule)
-    )
-  ) {
+  } else if (/^(\w+(\['[^']*'])*) *([!=]==?|[<>]=?) (\w+(\['[^']*'])*)$/.test(parse(rule))) {
     return flattenDeep(getProps(__getProperties(rule)));
   } else {
     return [];
@@ -178,11 +162,7 @@ function equal(c1: any, c2: any): boolean {
     ret = true;
   } else {
     if (c1[2] === c2[2]) {
-      if (
-        ["string", "number", "boolean", "regexp", "identifier", "null"].indexOf(
-          c1[2]
-        ) !== -1
-      ) {
+      if (["string", "number", "boolean", "regexp", "identifier", "null"].indexOf(c1[2]) !== -1) {
         ret = c1[0] === c2[0];
       } else if (c1[2] === "unary" || c1[2] === "logicalNot") {
         ret = equal(c1[0], c2[0]);
@@ -421,11 +401,7 @@ function parse(rule: ICondition): string {
   // return this[rule[2]](rule[0], rule[1]);
 }
 
-export function getSourceMatcher(
-  rule: ICondition,
-  options = {} as IPatternOptions,
-  equality: boolean
-) {
+export function getSourceMatcher(rule: ICondition, options = {} as IPatternOptions, equality: boolean) {
   return toJs(rule, options.scope, options.alias, equality, function (src) {
     return src;
   });

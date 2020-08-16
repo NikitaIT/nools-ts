@@ -6,7 +6,7 @@ import { AVLTree } from "@nools/data-structures";
 import { Context } from "./context";
 import { Tagged } from "./Tagged";
 
-interface IFactHash extends Map<string, IInsert | Context> {}
+type IFactHash = Map<string, IInsert | Context>;
 
 interface IAgendaRule {
   [name: string]: {
@@ -33,9 +33,7 @@ function fh_insert(fh: IFactHash, insert: IInsert) {
   const hashCode = insert.hashCode;
   const memory = fh;
   if (memory.has(hashCode)) {
-    throw new Error(
-      "Activation already in agenda " + insert.rule.n + " agenda"
-    );
+    throw new Error("Activation already in agenda " + insert.rule.n + " agenda");
   }
   memory.set(hashCode, insert);
 }
@@ -68,10 +66,7 @@ export class AgendaTree extends EventEmitter<AgendaGroupEvent> {
   private agendaGroupStack = new AgendaGroupStack();
   private agendaGroups = new Map<AgendaGroupTag, AVLTree<IInsert>>();
   private ruleByName = {} as IAgendaRule;
-  constructor(
-    private readonly flow: Flow,
-    private readonly comparator: (a: IInsert, b: IInsert) => number
-  ) {
+  constructor(private readonly flow: Flow, private readonly comparator: (a: IInsert, b: IInsert) => number) {
     super();
     this.setFocus(DEFAULT_AGENDA_GROUP).addAgendaGroup(DEFAULT_AGENDA_GROUP);
   }
@@ -86,12 +81,8 @@ export class AgendaTree extends EventEmitter<AgendaGroupEvent> {
   }
 
   getAgendaGroup(groupName: null | undefined): AVLTree<IInsert>;
-  getAgendaGroup(
-    groupName: AgendaGroupTag | null | undefined
-  ): AVLTree<IInsert> | undefined;
-  getAgendaGroup(
-    groupName: AgendaGroupTag | null | undefined
-  ): AVLTree<IInsert> | undefined {
+  getAgendaGroup(groupName: AgendaGroupTag | null | undefined): AVLTree<IInsert> | undefined;
+  getAgendaGroup(groupName: AgendaGroupTag | null | undefined): AVLTree<IInsert> | undefined {
     return this.agendaGroups.get(groupName || DEFAULT_AGENDA_GROUP);
   }
 
@@ -113,9 +104,7 @@ export class AgendaTree extends EventEmitter<AgendaGroupEvent> {
   get focusedAgenda() {
     const x = this.agendaGroups.get(this.focused);
     if (!x) {
-      throw Error(
-        `Agenda should be always focused, couse focus on "${DEFAULT_AGENDA_GROUP}" by default`
-      );
+      throw Error(`Agenda should be always focused, couse focus on "${DEFAULT_AGENDA_GROUP}" by default`);
     }
     return x;
   }
@@ -132,9 +121,7 @@ export class AgendaTree extends EventEmitter<AgendaGroupEvent> {
     return node;
   }
   private isFocusOnNotDefaultEmptyAgenda() {
-    return (
-      this.focusedAgenda.isEmpty() && this.focused !== DEFAULT_AGENDA_GROUP
-    );
+    return this.focusedAgenda.isEmpty() && this.focused !== DEFAULT_AGENDA_GROUP;
   }
   isEmpty() {
     const agendaGroupStack = this.agendaGroupStack;
@@ -156,15 +143,11 @@ export class AgendaTree extends EventEmitter<AgendaGroupEvent> {
     }
     if (!this.focusedAgenda.isEmpty()) {
       const activation = this.pop();
-      this.emit(
-        AgendaGroupEvent.fire,
-        activation.rule.n,
-        activation.match.factHash
-      );
+      this.emit(AgendaGroupEvent.fire, activation.rule.n, activation.match.factHash);
       return activation.rule.fire(this.flow, activation.match);
     } else {
       //return false if activation not fired
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         resolve();
       });
     }
@@ -221,7 +204,7 @@ export class AgendaTree extends EventEmitter<AgendaGroupEvent> {
   }
 
   dispose() {
-    for (const [name, agenda] of this.agendaGroups) {
+    for (const [, agenda] of this.agendaGroups) {
       agenda.clear();
     }
     const ruleByName = this.ruleByName;

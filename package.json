@@ -12,7 +12,11 @@
 		"converage": "istanbul cover -hook-run-in-content node_modules/mocha/bin/_mocha --require should ./tests/**.test.js --max-old-space-size=4096 --harmony --check-leaks",
 		"dist": "gulp && npm publish ./dist/",
 		"build": "gulp",
-		"karma": "karma start ./tests/karma.unit.js"
+		"karma": "karma start ./tests/karma.unit.js",
+		"lint-fix": "eslint */**/src/**/*.{js,ts,tsx} --quiet --fix",
+		"lint": "eslint */**/src/**/*.{js,ts,tsx}",
+		"architecture": "madge ./packages/nools/lib -i ./architecture/deps.png",
+		"show-circular-deps": "madge ./packages/nools/lib -c"
 	},
 	"keywords": [
 		"nools"
@@ -23,7 +27,6 @@
 		"@babel/core": "7.11.1",
 		"@babel/plugin-transform-runtime": "7.11.0",
 		"@babel/preset-env": "7.11.0",
-		"@types/mocha": "5.2.5",
 		"babel-loader": "8.1.0",
 		"browserify": "16.5.2",
 		"gulp": "4.0.2",
@@ -32,20 +35,21 @@
 		"gulp-shell": "0.8.0",
 		"gulp-uglyfly": "1.4.2",
 		"istanbul": "0.4.5",
-		"karma": "5.1.1",
-		"karma-chrome-launcher": "3.1.0",
-		"karma-mocha": "2.0.1",
-		"karma-mocha-reporter": "2.2.5",
-		"karma-phantomjs-launcher": "1.0.4",
-		"karma-should": "1.0.0",
-		"karma-webpack": "4.0.2",
-		"mocha": "8.1.1",
-		"prettier": "2.0.5",
+		"@types/jest": "26.0.5",
+		"jest": "26.1.0",
+		"ts-jest": "26.1.3",
 		"rimraf": "3.0.2",
 		"ts-loader": "8.0.2",
 		"typescript": "3.9.7",
 		"webpack": "4.44.1",
-		"webpack-cli": "3.3.12"
+		"webpack-cli": "3.3.12",
+		"eslint": "7.7.0",
+		"prettier": "2.0.5",
+		"eslint-config-prettier": "6.11.0",
+		"eslint-plugin-prettier": "3.1.4",
+		"@typescript-eslint/parser": "3.9.0",
+		"@typescript-eslint/eslint-plugin": "3.9.0",
+		"eslint-plugin-import": "2.22.0"
 	},
 	"dependencies": {
 		"@types/node": "14.0.27",

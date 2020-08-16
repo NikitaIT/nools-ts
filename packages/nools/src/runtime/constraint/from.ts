@@ -3,11 +3,7 @@ import { constraintType, IConstraint, IFromConstraint } from "../../constraint";
 import { getSourceMatcher } from "../../constraint-matcher";
 import { op } from "./op";
 
-export function from(
-  constraint: IFromConstraint,
-  defines: Map<string, any>,
-  scope: Map<string, any>
-): IFromConstraint {
+export function from(constraint: IFromConstraint, defines: Map<string, any>, scope: Map<string, any>): IFromConstraint {
   const alias = constraint.a;
   const condition = constraint.condition;
   const options = op(constraint.options, scope);
@@ -23,9 +19,7 @@ export function from(
     },
     equal(that: IConstraint) {
       return (
-        that.tp === constraintType.from &&
-        that.a === alias &&
-        isEqual(condition, (that as IFromConstraint).constraint)
+        that.tp === constraintType.from && that.a === alias && isEqual(condition, (that as IFromConstraint).constraint)
       );
     },
   };

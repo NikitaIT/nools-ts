@@ -1,6 +1,6 @@
 import { Fact } from "../facts/fact";
 import { InitialFact } from "../facts/initial";
-import { ILinkNode } from "../STD/linked-list";
+import { ILinkNode } from "../STD";
 import { FactNotExistsError } from "./FactNotExistsError";
 
 export interface Facts<T> {
@@ -17,10 +17,7 @@ export interface Facts<T> {
 // todo: may be not class?
 export type FactObject = any;
 export class WorkingMemory<TObject extends FactObject> {
-  constructor(
-    private readonly facts: Facts<Fact<TObject>>,
-    private recency: number = 0
-  ) {}
+  constructor(private readonly facts: Facts<Fact<TObject>>, private recency: number = 0) {}
 
   dispose() {
     this.facts.clear();
@@ -38,7 +35,7 @@ export class WorkingMemory<TObject extends FactObject> {
   }
 
   // typeof TObject
-  getFactsByType(Type: any) {
+  getFactsByType<TType extends new (...args: any) => any>(Type: TType): Array<InstanceType<TType>> {
     const ret: any[] = [];
     for (const head of this.facts) {
       const val = head.data.object;

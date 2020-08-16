@@ -2,7 +2,7 @@ import { ICompileOptions, IContext } from "../interfaces";
 import { to_map } from "../lang";
 import { get_defines, createFunction } from "../compile";
 import { FlowContainer } from "../flow-container";
-import { IRootNode } from "./nodes/types";
+import { IRootNode } from "./nodes/INode";
 
 export function compile(root: IRootNode, options: ICompileOptions) {
   const context = { define: [], rules: [], scope: [] } as IContext;

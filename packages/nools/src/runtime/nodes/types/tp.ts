@@ -1,9 +1,9 @@
 import { AgendaTree, IConstraint, IPattern } from "../import";
-import { IAlphaNode, IAlphaNodeBeforeCompile, IRootNode } from "./INode";
+import { IAlphaNode, IAlphaNodeBeforeCompile, IRootNode } from "../INode";
 
-export interface ITypeNode extends IAlphaNode {}
+export type ITypeNode = IAlphaNode;
 
-export interface ITypeNodeBeforeCompile extends IAlphaNodeBeforeCompile {}
+export type ITypeNodeBeforeCompile = IAlphaNodeBeforeCompile;
 export function tp(
   node: ITypeNode,
   root: IRootNode,
@@ -11,7 +11,7 @@ export function tp(
   defines: Map<string, any>,
   scope: Map<string, any>,
   patterns: IPattern[],
-  cs: IConstraint[]
+  cs: IConstraint[],
 ): ITypeNodeBeforeCompile {
   const constraint = cs[node.c];
   return {

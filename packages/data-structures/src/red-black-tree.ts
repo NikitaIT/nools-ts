@@ -16,11 +16,7 @@ function makeNode<T>(data: T): ITreeNode<T> {
   };
 }
 
-function insert<T>(
-  root: ITreeNode<T>,
-  data: T,
-  compare: (a: T, b: T) => number
-) {
+function insert<T>(root: ITreeNode<T>, data: T, compare: (a: T, b: T) => number) {
   if (!root) {
     return makeNode(data);
   } else {
@@ -29,7 +25,7 @@ function insert<T>(
       const dir = cmp === -1 ? "left" : "right";
       const otherDir = dir === "left" ? "right" : "left";
       root[dir] = insert(root[dir] as ITreeNode<T>, data, compare);
-      let node = root[dir] as ITreeNode<T>;
+      const node = root[dir] as ITreeNode<T>;
 
       if (isRed(node)) {
         const sibling = root[otherDir] as ITreeNode<T>;
@@ -72,16 +68,10 @@ function rotateDouble<T>(root: ITreeNode<T>, dir: Dir) {
   return rotateSingle(root, dir);
 }
 
-function remove<T>(
-  root: ITreeNode<T>,
-  data: T,
-  done: { done: boolean },
-  compare: (a: T, b: T) => number
-) {
+function remove<T>(root: ITreeNode<T>, data: T, done: { done: boolean }, compare: (a: T, b: T) => number) {
   if (!root) {
     done.done = true;
   } else {
-    let dir: Dir;
     if (compare(data, root.data) === 0) {
       if (!root.left || !root.right) {
         const save = root[!root.left ? "right" : "left"] as ITreeNode<T>;
@@ -109,7 +99,7 @@ function remove<T>(
         data = heir.data;
       }
     }
-    dir = compare(data, root.data) === -1 ? "left" : "right";
+    const dir: Dir = compare(data, root.data) === -1 ? "left" : "right";
     root[dir] = remove(root[dir] as ITreeNode<T>, data, done, compare);
     if (!done.done) {
       root = removeBalance(root, dir, done);
@@ -118,11 +108,7 @@ function remove<T>(
   return root;
 }
 
-function removeBalance<T>(
-  root: ITreeNode<T>,
-  dir: Dir,
-  done: { done: boolean }
-) {
+function removeBalance<T>(root: ITreeNode<T>, dir: Dir, done: { done: boolean }) {
   const notDir = dir === "left" ? "right" : "left";
   let p = root;
   let s = p[notDir] as ITreeNode<T>;
@@ -143,10 +129,7 @@ function removeBalance<T>(
       const save = p.red,
         newRoot = root === p;
       // @ts-ignore
-      p = (isRed(s[notDir] as ITreeNode<T>) ? rotateSingle : rotateDouble)(
-        p,
-        dir
-      );
+      p = (isRed(s[notDir] as ITreeNode<T>) ? rotateSingle : rotateDouble)(p, dir);
       p.red = save;
       // @ts-ignore
       p.left.red = p.right.red = false;

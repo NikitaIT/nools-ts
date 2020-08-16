@@ -1,8 +1,9 @@
 import { Context } from "../context";
-import { INode, ITerminalNode } from "../runtime/nodes/types";
+import { ITerminalNode } from "../runtime/nodes/types";
+import { INode } from "../runtime/nodes/INode";
 
 export class TerminalNode {
-  assert(nodes: INode[], n: number, context: Context) {
+  assert = (nodes: INode[], n: number, context: Context) => {
     const node = nodes[n] as ITerminalNode;
     const match = context.match;
     if (match.isMatch) {
@@ -18,15 +19,15 @@ export class TerminalNode {
         counter: bucket.counter,
       });
     }
-  }
-  modify(nodes: INode[], n: number, context: Context) {
+  };
+  modify = (nodes: INode[], n: number, context: Context) => {
     const node = nodes[n] as ITerminalNode;
     node.agenda.retract(node, context);
     this.assert(nodes, n, context);
-  }
-  retract(nodes: INode[], n: number, context: Context) {
+  };
+  retract = (nodes: INode[], n: number, context: Context) => {
     const node = nodes[n] as ITerminalNode;
     node.agenda.retract(node, context);
-  }
+  };
 }
 export const terminalNodeUtils = new TerminalNode();

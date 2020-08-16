@@ -1,36 +1,21 @@
 import { isArray } from "@nools/lodash-port";
-import { IFromNotNode, INode, INodeWithPatterns } from "../runtime/nodes/types";
+import { IFromNotNode } from "../runtime/nodes/types";
+import { INode, INodeWithPatterns } from "../runtime/nodes/INode";
 import { FactObject, WorkingMemory } from "../WorkingMemory";
-import {
-  IConstraint,
-  is_instance_of_hash,
-  is_instance_of_equality,
-  is_instance_of_reference_constraint,
-} from "../constraint";
-import { Fact } from "../facts/fact";
 import { Context } from "../context";
-import { IFromPattern } from "../pattern";
-import {
-  __addToLeftMemory,
-  assert,
-  modify,
-  retract,
-  removeFromLeftMemory,
-} from "./beta-node";
+import { __addToLeftMemory, assert, modify, retract, removeFromLeftMemory } from "./beta-node";
 
 function __isMatch<TObject extends FactObject>(
   node: IFromNotNode,
   oc: Context,
   o: any,
   add: boolean,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   let ret = false;
   if (node.type_assert(o)) {
     const createdFact = wm.getFactHandle(o);
-    const context = new Context(createdFact, null)
-      .mergeMatch(oc.match)
-      .set(node.alias, o);
+    const context = new Context(createdFact, null).mergeMatch(oc.match).set(node.alias, o);
     if (add) {
       let fm = node.fromMemory[createdFact.id];
       if (!fm) {
@@ -50,7 +35,7 @@ export function __findMatches<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const node = nodes[n] as IFromNotNode;
   const fh = context.factHash,
@@ -66,10 +51,7 @@ export function __findMatches<TObject extends FactObject>(
       }
     });
     assert(nodes, n, context.clone(), wm);
-  } else if (
-    o !== undefined &&
-    !(context.blocked = __isMatch(node, context, o, true, wm))
-  ) {
+  } else if (o !== undefined && !(context.blocked = __isMatch(node, context, o, true, wm))) {
     assert(nodes, n, context.clone(), wm);
   }
   return isMatch;
@@ -79,7 +61,7 @@ export function assert_left<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   __addToLeftMemory(nodes, n, context);
   __findMatches(nodes, n, context, wm);
@@ -90,7 +72,7 @@ function __modify<TObject extends FactObject>(
   n: number,
   context: Context,
   leftContext: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const node = nodes[n] as IFromNotNode;
   const leftContextBlocked = leftContext.blocked;
@@ -124,7 +106,7 @@ export function modify_left<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const ctx = removeFromLeftMemory(nodes, n, context);
   if (ctx) {
@@ -157,7 +139,7 @@ export function retract_left<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const tuple = removeFromLeftMemory(nodes, n, context);
   if (tuple) {

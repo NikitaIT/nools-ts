@@ -1,6 +1,5 @@
-import { Context } from "../context";
-import { IEqualityNode, INode } from "../runtime/nodes/types";
-import { FactObject, WorkingMemory } from "../WorkingMemory";
+import { IEqualityNode } from "../runtime/nodes/types";
+import { FactObject } from "../WorkingMemory";
 import { Args } from "./Args";
 import { propagate_assert, propagate_modify, propagate_retract } from "./Funs";
 

@@ -9,7 +9,7 @@ import {
   is_instance_of_equality,
   is_instance_of_reference_constraint,
 } from "../import";
-import { IRootNode } from "./INode";
+import { IRootNode } from "../INode";
 import { IJoinNode, join } from "./join";
 
 export interface IFromNotNode extends IJoinNode {
@@ -25,7 +25,7 @@ export interface IFromNotNode extends IJoinNode {
   }[];
   __variables: any[];
 }
-export interface IExistsFromNode extends IFromNotNode {}
+export type IExistsFromNode = IFromNotNode;
 
 export function from_not(
   node: IFromNotNode,
@@ -34,7 +34,7 @@ export function from_not(
   defines: Map<string, any>,
   scope: Map<string, any>,
   patterns: IPattern[],
-  cs: IConstraint[]
+  cs: IConstraint[],
 ): IFromNotNode {
   // const pattern = pt(node.pattern, defines, scope) as IFromPattern;
   const pattern = patterns[node.p] as IFromPattern;

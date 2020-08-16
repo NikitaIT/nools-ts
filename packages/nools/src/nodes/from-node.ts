@@ -1,26 +1,16 @@
 import { isArray, isEmpty } from "@nools/lodash-port";
 import { Context } from "../context";
-import { IFromNode, INode, INodeWithPatterns } from "../runtime/nodes/types";
+import { IFromNode } from "../runtime/nodes/types";
+import { INode, INodeWithPatterns } from "../runtime/nodes/INode";
 import { FactObject, WorkingMemory } from "../WorkingMemory";
-import {
-  __addToLeftMemory,
-  assert,
-  removeFromLeftMemory,
-  modify,
-  retract,
-} from "./beta-node";
+import { __addToLeftMemory, assert, removeFromLeftMemory, modify, retract } from "./beta-node";
 import { assert_left as base_assert_left } from "./join-node";
 
 const DEFAULT_MATCH = {
   isMatch: false,
 } as Context;
 
-function __createMatch<TObject extends FactObject>(
-  node: IFromNode,
-  lc: Context,
-  o: any,
-  wm: WorkingMemory<TObject>
-) {
+function __createMatch<TObject extends FactObject>(node: IFromNode, lc: Context, o: any, wm: WorkingMemory<TObject>) {
   if (node.type_assert(o)) {
     const createdFact = wm.getFactHandle(o);
     const rc = new Context(createdFact, null, null).set(node.alias, o);
@@ -37,11 +27,7 @@ function __createMatch<TObject extends FactObject>(
     const eqConstraints = node.__equalityConstraints;
     if (
       eqConstraints.some((eqConstraint) => {
-        if (!eqConstraint(fh, fh)) {
-          return true;
-        } else {
-          return false;
-        }
+        return !eqConstraint(fh, fh);
       })
     ) {
       const createdContext = DEFAULT_MATCH;
@@ -51,11 +37,7 @@ function __createMatch<TObject extends FactObject>(
       node.__variables.forEach((prop) => {
         fh.set(prop, o[prop]);
       });
-      const createdContext = rc.clone(
-        createdFact,
-        undefined,
-        lc.match.merge(rc.match)
-      );
+      const createdContext = rc.clone(createdFact, undefined, lc.match.merge(rc.match));
       lc.fromMatches[createdFact.id] = createdContext;
       fm[lc.hashCode] = [lc, createdContext];
       return createdContext;
@@ -70,7 +52,7 @@ function __checkMatch<TObject extends FactObject>(
   context: Context,
   o: any,
   propogate = false,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const node = nodes[n] as IFromNode;
   const newContext = __createMatch(node, context, o, wm);
@@ -84,7 +66,7 @@ function __createMatches<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const node = nodes[n] as IFromNode;
   const fh = context.factHash,
@@ -102,7 +84,7 @@ export function assert_left<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   __addToLeftMemory(nodes, n, context);
   context.fromMatches = {};
@@ -134,7 +116,7 @@ export function modify_left<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const ctx = removeFromLeftMemory(nodes, n, context);
   // newContext, i, l, factId, fact;
@@ -197,9 +179,7 @@ export function modify_left<TObject extends FactObject>(
           retract(nodes, n, cc.clone(), wm);
         }
         if (newContext.isMatch) {
-          createdIsMatch
-            ? modify(nodes, n, newContext.clone(), wm)
-            : assert(nodes, n, newContext.clone(), wm);
+          createdIsMatch ? modify(nodes, n, newContext.clone(), wm) : assert(nodes, n, newContext.clone(), wm);
         }
       }
     }
@@ -210,7 +190,7 @@ export function retract_left<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const tuple = removeFromLeftMemory(nodes, n, context);
   if (tuple) {

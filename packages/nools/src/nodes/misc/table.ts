@@ -39,11 +39,7 @@ function compareLTE(v1: ITreeData, v2: ITreeData) {
 
 const STACK: ITreeNode<ITreeData>[] = [];
 const VALUE: ITreeData = { key: null } as any;
-function traverseInOrder(
-  tree: Table,
-  key: IEntry,
-  comparator: (v1: ITreeData, v2: ITreeData) => boolean
-) {
+function traverseInOrder(tree: Table, key: IEntry, comparator: (v1: ITreeData, v2: ITreeData) => boolean) {
   VALUE.key = key;
   const ret: ITuple[] = [];
   let i = 0,
@@ -70,11 +66,7 @@ function traverseInOrder(
   return ret;
 }
 
-function traverseReverseOrder(
-  tree: Table,
-  key: IEntry,
-  comparator: (v1: ITreeData, v2: ITreeData) => boolean
-) {
+function traverseReverseOrder(tree: Table, key: IEntry, comparator: (v1: ITreeData, v2: ITreeData) => boolean) {
   VALUE.key = key;
   const ret: ITuple[] = [];
   let i = 0,
@@ -168,10 +160,7 @@ export class Table extends AVLTree<ITreeData> {
     let ret = this.gteCache.get(key);
     if (!ret) {
       this.hasGTECache = true;
-      this.gteCache.set(
-        key,
-        (ret = traverseReverseOrder(this, key, compareGTE))
-      );
+      this.gteCache.set(key, (ret = traverseReverseOrder(this, key, compareGTE)));
     }
     return ret;
   }

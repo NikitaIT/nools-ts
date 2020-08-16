@@ -53,8 +53,7 @@ export class BinaryTree<T> extends Tree<T> {
       if (f !== null) {
         f.data = it.data;
         // @ts-ignore
-        p[p.right === it ? "right" : "left"] =
-          it[it.left === null ? "right" : "left"];
+        p[p.right === it ? "right" : "left"] = it[it.left === null ? "right" : "left"];
       }
       // @ts-ignore
       this.setRoot(head.right);

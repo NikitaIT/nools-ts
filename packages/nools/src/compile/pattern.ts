@@ -1,11 +1,6 @@
 import { IFromConstraint } from "../constraint";
 import { cst } from "./constraint";
-import {
-  IPattern,
-  IObjectPattern,
-  patternType,
-  IFromPattern,
-} from "../pattern";
+import { IObjectPattern, patternType, IFromPattern } from "../pattern";
 const funcs: Record<patternType, (constraint: any) => any> = {
   [patternType.object]: obj,
   [patternType.initial_fact]: obj,

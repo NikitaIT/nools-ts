@@ -1,7 +1,8 @@
-import { INode, INodeWithPatterns, ITypeNode } from "../runtime/nodes/types";
+import { ITypeNode } from "../runtime/nodes/types";
+import { INode, INodeWithPatterns } from "../runtime/nodes/INode";
 import { Context } from "../context";
 import { Fact } from "../facts/fact";
-import { FactObject, WorkingMemory } from "../WorkingMemory";
+import { FactObject } from "../WorkingMemory";
 import { Args } from "./Args";
 import { base_assert, base_dispose, base_modify, base_retract } from "./Funs";
 
@@ -12,17 +13,15 @@ export class TypeNode {
 
   retract = wrap(base_retract);
 
-  dispose(nodes: Array<INode & INodeWithPatterns>, n: number) {
+  dispose<TObject extends FactObject>(nodes: Array<INode & INodeWithPatterns>, n: number) {
     const node = nodes[n];
-    for (const [outNode, paths] of node.nodes.entries()) {
+    for (const [outNode] of node.nodes.entries()) {
       base_dispose(nodes, outNode);
     }
   }
 }
 
-function wrap<TObject extends FactObject>(
-  fn: Args<TObject>
-): Args<TObject, Fact> {
+function wrap<TObject extends FactObject>(fn: Args<TObject>): Args<TObject, Fact> {
   return (nodes, n, fact, wm) => {
     const node = nodes[n];
     if ((node as ITypeNode).ca(fact.object)) {

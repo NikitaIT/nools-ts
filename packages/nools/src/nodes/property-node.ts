@@ -1,9 +1,6 @@
 import { Context } from "../context";
-import {
-  INode,
-  INodeWithPatterns,
-  IPropertyNode,
-} from "../runtime/nodes/types";
+import { IPropertyNode } from "../runtime/nodes/types";
+import { INode, INodeWithPatterns } from "../runtime/nodes/INode";
 import { Args } from "./Args";
 import { propagate_assert, propagate_modify, propagate_retract } from "./Funs";
 import { FactObject, WorkingMemory } from "../WorkingMemory";
@@ -30,7 +27,7 @@ export function retract<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   propagate_retract(nodes, n, new Context(context.fact, context.paths), wm);
 }

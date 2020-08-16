@@ -37,11 +37,7 @@ function split<T>(root: ITreeNode<T>): ITreeNode<T> {
   return root;
 }
 
-function insert<T>(
-  root: ITreeNode<T>,
-  data: T,
-  compare: (v1: T, v2: T) => number
-): ITreeNode<T> {
+function insert<T>(root: ITreeNode<T>, data: T, compare: (v1: T, v2: T) => number): ITreeNode<T> {
   if (root === nil) {
     root = makeNode(data, 1);
   } else {
@@ -53,11 +49,7 @@ function insert<T>(
   return root;
 }
 
-function remove<T>(
-  root: ITreeNode<T>,
-  data: T,
-  compare: (v1: T, v2: T) => number
-): ITreeNode<T> {
+function remove<T>(root: ITreeNode<T>, data: T, compare: (v1: T, v2: T) => number): ITreeNode<T> {
   let rLeft: ITreeNode<T>, rRight: ITreeNode<T>;
   if (root !== nil) {
     const cmp = compare(data, root.data);
@@ -116,11 +108,7 @@ export class AnderssonTree<T> extends Tree<T> {
     this.setRoot(remove(this.root, data, this.compare));
   }
 
-  traverseWithCondition(
-    node: ITreeNode<T>,
-    order?: string,
-    callback?: (data: T) => boolean
-  ): boolean {
+  traverseWithCondition(node: ITreeNode<T>, order?: string, callback?: (data: T) => boolean): boolean {
     const cont = true;
     if (node !== nil) {
       // @ts-ignore

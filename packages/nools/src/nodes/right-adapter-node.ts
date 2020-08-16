@@ -1,7 +1,5 @@
 import { intersection } from "@nools/lodash-port";
-import { Context } from "../context";
-import { IAdapterNode, INode } from "../runtime/nodes/types";
-import { FactObject, WorkingMemory } from "../WorkingMemory";
+import { FactObject } from "../WorkingMemory";
 import { Args } from "./Args";
 import {
   base_assert_left,
@@ -29,7 +27,7 @@ export const Left = {
 };
 export function getAdapterNode<TObject extends FactObject>(
   t: typeof Left | typeof Right,
-  type: AdapterNodeType
+  type: AdapterNodeType,
 ): Args<TObject> {
   return (nodes, n, context, wm) => {
     if (context.paths) {
@@ -39,30 +37,21 @@ export function getAdapterNode<TObject extends FactObject>(
     }
   };
 }
-export function wrapNoPaths<TObject extends FactObject>(
-  fn: Args<TObject>
-): Args<TObject> {
+export function wrapNoPaths<TObject extends FactObject>(fn: Args<TObject>): Args<TObject> {
   return (nodes, n, context, wm) => {
     const node = nodes[n];
-    for (const [outNode, paths] of node.nodes.entries()) {
+    for (const [outNode] of node.nodes.entries()) {
       fn(nodes, outNode, context, wm);
     }
   };
 }
-export function wrapPaths<TObject extends FactObject>(
-  fn: Args<TObject>
-): Args<TObject> {
+export function wrapPaths<TObject extends FactObject>(fn: Args<TObject>): Args<TObject> {
   return (nodes, n, context, wm) => {
     const node = nodes[n];
     for (const [outNode, paths] of node.nodes.entries()) {
       const continuingPaths = intersection(paths, context.paths!);
       if (continuingPaths.length) {
-        fn(
-          nodes,
-          outNode,
-          context.clone(undefined, continuingPaths, undefined),
-          wm
-        );
+        fn(nodes, outNode, context.clone(undefined, continuingPaths, undefined), wm);
       }
     }
   };

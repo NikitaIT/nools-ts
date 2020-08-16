@@ -1,11 +1,6 @@
 import { isEqual, mixin } from "@nools/lodash-port";
 import { Hash, IPatternOptions, ICondition } from "./interfaces";
-import {
-  getMatcher,
-  getSourceMatcher,
-  getIdentifiers,
-  getIndexableProperties,
-} from "./constraint-matcher";
+import { getMatcher, getSourceMatcher, getIdentifiers, getIndexableProperties } from "./constraint-matcher";
 
 export enum constraintType {
   comparison, // > >= < <= !=
@@ -34,13 +29,13 @@ export interface IConstraint {
   // vars: any;
 }
 
-export interface ITrueConstraint extends IConstraint {}
+export type ITrueConstraint = IConstraint;
 
 export function create_true_constraint(alias: string): ITrueConstraint {
   return {
     tp: constraintType.true,
     a: alias,
-    assert(it) {
+    assert() {
       return true;
     },
     equal(that: IConstraint) {
@@ -53,7 +48,7 @@ function _create_equality_constraint(
   type: constraintType,
   alias: string,
   condition: ICondition,
-  options = {} as IPatternOptions
+  options = {} as IPatternOptions,
 ): IEqualityConstraint {
   const matcher = getMatcher(condition, options, true);
   return {
@@ -67,7 +62,7 @@ function _create_equality_constraint(
     },
     equal(that: IConstraint) {
       return (
-        /*constraint.type == 'equality' && */ that.a == alias,
+        /*constraint.type == 'equality' && that.a == alias */
         isEqual(condition, (that as IEqualityConstraint).constraint)
       );
     },
@@ -82,44 +77,29 @@ export interface IEqualityConstraint extends IConstraint {
 export function create_equality_constraint(
   alias: string,
   constraint: ICondition,
-  options = {} as IPatternOptions
+  options = {} as IPatternOptions,
 ): IEqualityConstraint {
-  return _create_equality_constraint(
-    constraintType.equality,
-    alias,
-    constraint,
-    options
-  );
+  return _create_equality_constraint(constraintType.equality, alias, constraint, options);
 }
 
-export interface IInequalityConstraint extends IEqualityConstraint {}
+export type IInequalityConstraint = IEqualityConstraint;
 
 export function create_inequality_constraint(
   alias: string,
   constraint: ICondition,
-  options = {} as IPatternOptions
+  options = {} as IPatternOptions,
 ): IInequalityConstraint {
-  return _create_equality_constraint(
-    constraintType.inequality,
-    alias,
-    constraint,
-    options
-  );
+  return _create_equality_constraint(constraintType.inequality, alias, constraint, options);
 }
 
-export interface IComparisonConstraint extends IEqualityConstraint {}
+export type IComparisonConstraint = IEqualityConstraint;
 
 export function create_comparison_constraint(
   alias: string,
   constraint: ICondition,
-  options = {} as IPatternOptions
+  options = {} as IPatternOptions,
 ): IComparisonConstraint {
-  return _create_equality_constraint(
-    constraintType.comparison,
-    alias,
-    constraint,
-    options
-  );
+  return _create_equality_constraint(constraintType.comparison, alias, constraint, options);
 }
 
 export interface IObjectConstraint extends IConstraint {
@@ -127,24 +107,17 @@ export interface IObjectConstraint extends IConstraint {
   constraint?: any; // class: String, Number, Boolean... etc
 }
 
-export function create_object_constraint(
-  alias: string,
-  cls: string,
-  constraint: any
-): IObjectConstraint {
+export function create_object_constraint(alias: string, cls: string, constraint: any): IObjectConstraint {
   return {
     tp: constraintType.object,
     a: alias,
     cls: cls,
     constraint: constraint,
-    assert(fact: any, fh?: any) {
+    assert(fact: any) {
       return fact instanceof constraint || fact.constructor === constraint;
     },
     equal(that: IConstraint) {
-      return (
-        that.tp === constraintType.object &&
-        constraint === (that as IObjectConstraint).constraint
-      );
+      return that.tp === constraintType.object && constraint === (that as IObjectConstraint).constraint;
     },
   };
 }
@@ -152,22 +125,17 @@ export interface IHashConstraint extends IConstraint {
   constraint: Hash; // store: {}
 }
 
-export function create_hash_constraint(
-  alias: string,
-  constraint: Hash
-): IHashConstraint {
+export function create_hash_constraint(alias: string, constraint: Hash): IHashConstraint {
   return {
     tp: constraintType.hash,
     a: alias,
     constraint: constraint,
-    assert(fact: any, fh?: any) {
+    assert() {
       return true;
     },
     equal(that: IConstraint) {
       return (
-        that.tp === constraintType.hash &&
-        that.a === alias &&
-        isEqual(constraint, (that as IHashConstraint).constraint)
+        that.tp === constraintType.hash && that.a === alias && isEqual(constraint, (that as IHashConstraint).constraint)
       );
     },
   };
@@ -175,14 +143,14 @@ export function create_hash_constraint(
 
 export interface IFromConstraint extends IConstraint {
   options: IPatternOptions;
-  constraint: Function;
+  constraint: (...args: any[]) => any;
   condition: ICondition;
 }
 
 export function create_from_constraint(
   alias: string,
   condition: ICondition,
-  options = {} as IPatternOptions
+  options = {} as IPatternOptions,
 ): IFromConstraint {
   const matcher = getSourceMatcher(condition, options, true);
   return {
@@ -196,9 +164,7 @@ export function create_from_constraint(
     },
     equal(that: IConstraint) {
       return (
-        that.tp === constraintType.from &&
-        that.a === alias &&
-        isEqual(condition, (that as IFromConstraint).constraint)
+        that.tp === constraintType.from && that.a === alias && isEqual(condition, (that as IFromConstraint).constraint)
       );
     },
   };
@@ -247,9 +213,7 @@ export function is_instance_of_reference_constraint(constraint: IConstraint) {
   );
 }
 
-export function is_instance_of_reference_eq_constraint(
-  constraint: IConstraint
-) {
+export function is_instance_of_reference_eq_constraint(constraint: IConstraint) {
   return (
     constraint.tp === constraintType.reference_equality ||
     constraint.tp === constraintType.reference_gt ||
@@ -265,7 +229,7 @@ function _create_reference_constraint(
   op: string,
   alias: string,
   constraint: ICondition,
-  options = {} as IPatternOptions
+  options = {} as IPatternOptions,
 ): IReferenceConstraint {
   const matcher = getMatcher(constraint, options, false);
   return {
@@ -290,39 +254,22 @@ function _create_reference_constraint(
           op,
           alias || that.a,
           [constraint, (that as IReferenceConstraint).constraint, "and"],
-          mixin({}, options)
+          mixin({}, options),
         );
       } else {
-        return _create_reference_constraint(
-          type,
-          op,
-          alias,
-          constraint,
-          options
-        ); // return this;
+        return _create_reference_constraint(type, op, alias, constraint, options); // return this;
       }
     },
     equal(that: IConstraint) {
       return (
-        is_instance_of_reference_constraint(that) &&
-        isEqual(constraint, (that as IReferenceConstraint).constraint)
+        is_instance_of_reference_constraint(that) && isEqual(constraint, (that as IReferenceConstraint).constraint)
       );
     },
   };
 }
 
-export function create_reference_constraint(
-  alias: string,
-  constraint: ICondition,
-  options = {} as IPatternOptions
-) {
-  return _create_reference_constraint(
-    constraintType.reference,
-    "none",
-    alias,
-    constraint,
-    options
-  );
+export function create_reference_constraint(alias: string, constraint: ICondition, options = {} as IPatternOptions) {
+  return _create_reference_constraint(constraintType.reference, "none", alias, constraint, options);
 }
 
 export interface IReferenceEqualityConstraint extends IReferenceConstraint {
@@ -332,93 +279,57 @@ export interface IReferenceEqualityConstraint extends IReferenceConstraint {
 export function create_reference_equality_constraint(
   alias: string,
   constraint: ICondition,
-  options = {} as IPatternOptions
+  options = {} as IPatternOptions,
 ): IReferenceEqualityConstraint {
-  return _create_reference_constraint(
-    constraintType.reference_equality,
-    "eq",
-    alias,
-    constraint,
-    options
-  );
+  return _create_reference_constraint(constraintType.reference_equality, "eq", alias, constraint, options);
 }
 
-export interface IReferenceInequalityConstraint extends IReferenceConstraint {}
+export type IReferenceInequalityConstraint = IReferenceConstraint;
 
 export function create_reference_inequality_constraint(
   alias: string,
   constraint: ICondition,
-  options = {} as IPatternOptions
+  options = {} as IPatternOptions,
 ): IReferenceInequalityConstraint {
-  return _create_reference_constraint(
-    constraintType.reference_inequality,
-    "neq",
-    alias,
-    constraint,
-    options
-  );
+  return _create_reference_constraint(constraintType.reference_inequality, "neq", alias, constraint, options);
 }
 
-export interface IReferenceGTConstraint extends IReferenceConstraint {}
+export type IReferenceGTConstraint = IReferenceConstraint;
 
 export function create_reference_gt_constraint(
   alias: string,
   constraint: ICondition,
-  options = {} as IPatternOptions
+  options = {} as IPatternOptions,
 ): IReferenceGTConstraint {
-  return _create_reference_constraint(
-    constraintType.reference_gt,
-    "gt",
-    alias,
-    constraint,
-    options
-  );
+  return _create_reference_constraint(constraintType.reference_gt, "gt", alias, constraint, options);
 }
 
-export interface IReferenceGTEConstraint extends IReferenceConstraint {}
+export type IReferenceGTEConstraint = IReferenceConstraint;
 
 export function create_reference_gte_constraint(
   alias: string,
   constraint: ICondition,
-  options = {} as IPatternOptions
+  options = {} as IPatternOptions,
 ): IReferenceGTEConstraint {
-  return _create_reference_constraint(
-    constraintType.reference_gte,
-    "gte",
-    alias,
-    constraint,
-    options
-  );
+  return _create_reference_constraint(constraintType.reference_gte, "gte", alias, constraint, options);
 }
 
-export interface IReferenceLTConstraint extends IReferenceConstraint {}
+export type IReferenceLTConstraint = IReferenceConstraint;
 
 export function create_reference_lt_constraint(
   alias: string,
   constraint: ICondition,
-  options = {} as IPatternOptions
+  options = {} as IPatternOptions,
 ): IReferenceLTConstraint {
-  return _create_reference_constraint(
-    constraintType.reference_lt,
-    "lt",
-    alias,
-    constraint,
-    options
-  );
+  return _create_reference_constraint(constraintType.reference_lt, "lt", alias, constraint, options);
 }
 
-export interface IReferenceLTEConstraint extends IReferenceConstraint {}
+export type IReferenceLTEConstraint = IReferenceConstraint;
 
 export function create_reference_lte_constraint(
   alias: string,
   constraint: ICondition,
-  options = {} as IPatternOptions
+  options = {} as IPatternOptions,
 ): IReferenceLTEConstraint {
-  return _create_reference_constraint(
-    constraintType.reference_lte,
-    "lte",
-    alias,
-    constraint,
-    options
-  );
+  return _create_reference_constraint(constraintType.reference_lte, "lte", alias, constraint, options);
 }

@@ -1,7 +1,8 @@
 import { Context } from "../context";
-import { IExistsNode, INode, INodeWithPatterns } from "../runtime/nodes/types";
+import { IExistsNode } from "../runtime/nodes/types";
+import { INode, INodeWithPatterns } from "../runtime/nodes/INode";
 import { ITuple } from "./misc/tuple-entry";
-import { LinkedList, ILinkNode } from "../STD/linked-list";
+import { LinkedList } from "../STD";
 import {
   removeFromLeftMemory,
   assert,
@@ -11,11 +12,7 @@ import {
   removeFromRightMemory,
   __addToRightMemory,
 } from "./beta-node";
-import {
-  removeFromLeftBlockedMemory,
-  __cloneContext,
-  addToLeftBlockedMemory,
-} from "./not-node";
+import { removeFromLeftBlockedMemory, __cloneContext, addToLeftBlockedMemory } from "./not-node";
 import { FactObject, WorkingMemory } from "../WorkingMemory";
 import { memory_get } from "./misc/memory";
 
@@ -24,9 +21,8 @@ function blockedContext<TObject extends FactObject>(
   n: number,
   leftContext: Context,
   rightContext: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
-  const node = nodes[n] as IExistsNode;
   leftContext.blocker = rightContext;
   removeFromLeftMemory(nodes, n, leftContext);
   addToLeftBlockedMemory(nodes, n, rightContext.blocking!.push(leftContext));
@@ -38,7 +34,7 @@ function notBlockedContext<TObject extends FactObject>(
   n: number,
   leftContext: Context,
   propagate: boolean,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   __addToLeftMemory(nodes, n, leftContext);
   propagate && retract(nodes, n, __cloneContext(nodes, n, leftContext), wm);
@@ -48,7 +44,7 @@ function propagateFromLeft<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   leftContext: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   notBlockedContext(nodes, n, leftContext, false, wm);
 }
@@ -58,7 +54,7 @@ function blockFromAssertLeft<TObject extends FactObject>(
   n: number,
   leftContext: Context,
   rightContext: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   blockedContext(nodes, n, leftContext, rightContext, wm);
 }
@@ -67,7 +63,7 @@ export function assert_left<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const node = nodes[n] as IExistsNode;
   const values = memory_get(node.rightTuples, context);
@@ -93,7 +89,7 @@ function blockFromAssertRight<TObject extends FactObject>(
   n: number,
   leftContext: Context,
   rightContext: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   blockedContext(nodes, n, leftContext, rightContext, wm);
 }
@@ -102,7 +98,7 @@ export function assert_right<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   __addToRightMemory(nodes, n, context);
   context.blocking = new LinkedList<Context>();
@@ -121,7 +117,7 @@ export function modify_left<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ): void {
   const node = nodes[n] as IExistsNode;
   const thisConstraint = node.constraint;
@@ -200,7 +196,7 @@ export function modify_right<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const tuple = removeFromRightMemory(nodes, n, context);
   if (tuple) {
@@ -226,11 +222,7 @@ export function modify_right<TObject extends FactObject>(
           leftContext.blocker = null;
           if (thisConstraint.isMatch(leftContext, context)) {
             leftContext.blocker = context;
-            addToLeftBlockedMemory(
-              nodes,
-              n,
-              context.blocking.push(leftContext)
-            );
+            addToLeftBlockedMemory(nodes, n, context.blocking.push(leftContext));
             assert(nodes, n, __cloneContext(nodes, n, leftContext), wm);
             // @ts-ignore
             leftContext = null;
@@ -243,11 +235,7 @@ export function modify_right<TObject extends FactObject>(
               const rc = tpl.data;
               if (thisConstraint.isMatch(leftContext, rc)) {
                 leftContext.blocker = rc;
-                addToLeftBlockedMemory(
-                  nodes,
-                  n,
-                  rc.blocking!.push(leftContext)
-                );
+                addToLeftBlockedMemory(nodes, n, rc.blocking!.push(leftContext));
                 assert(nodes, n, __cloneContext(nodes, n, leftContext), wm);
                 // @ts-ignore
                 leftContext = null;
@@ -269,11 +257,7 @@ export function modify_right<TObject extends FactObject>(
           if (thisConstraint.isMatch(leftContext, context)) {
             assert(nodes, n, __cloneContext(nodes, n, leftContext), wm);
             removeFromLeftMemory(nodes, n, leftContext);
-            addToLeftBlockedMemory(
-              nodes,
-              n,
-              context.blocking.push(leftContext)
-            );
+            addToLeftBlockedMemory(nodes, n, context.blocking.push(leftContext));
             leftContext.blocker = context;
           }
         }
@@ -288,7 +272,7 @@ export function retract_left<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   if (!removeFromLeftMemory(nodes, n, context)) {
     const ctx = removeFromLeftBlockedMemory(nodes, n, context);
@@ -304,7 +288,7 @@ export function retract_right<TObject extends FactObject>(
   nodes: Array<INode & INodeWithPatterns>,
   n: number,
   context: Context,
-  wm: WorkingMemory<TObject>
+  wm: WorkingMemory<TObject>,
 ) {
   const ctx = removeFromRightMemory(nodes, n, context),
     rightContext = ctx.data,

@@ -67,23 +67,19 @@ export class LinkedList<T> implements ILinkedList<T>, Facts<T> {
     this.length--;
   }
   *[Symbol.iterator]() {
-    for (
-      let head: ILinkNode<T> | null | undefined = this.head;
-      head;
-      head = head.next
-    ) {
+    for (let head: ILinkNode<T> | null | undefined = this.head; head; head = head.next) {
       yield head;
     }
   }
   public forEach(cb: (data: T) => void) {
-    for (let head of this) {
+    for (const head of this) {
       cb(head.data);
     }
   }
 
   public toArray() {
-    let ret: T[] = [];
-    for (let head of this) {
+    const ret: T[] = [];
+    for (const head of this) {
       // ret.push(head);		// todo need test
       ret.push(head.data);
     }
@@ -91,7 +87,7 @@ export class LinkedList<T> implements ILinkedList<T>, Facts<T> {
   }
 
   public removeByData(data: T) {
-    for (let head of this) {
+    for (const head of this) {
       if (head.data === data) {
         this.remove(head);
         break;
