@@ -3,7 +3,7 @@
 
 # Architecture
  
-![Module Dependencies](https://github.com/NikitaIT/nools-ts/tree/master/architecture/deps.png)
+![Module Dependencies](https://github.com/NikitaIT/nools-ts/blob/master/architecture/deps.png)
 
 # Nools
 
