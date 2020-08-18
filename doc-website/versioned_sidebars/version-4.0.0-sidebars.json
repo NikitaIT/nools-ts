@@ -1,0 +1,14 @@
+{
+  "version-4.0.0/docs": [
+    {
+      "type": "category",
+      "label": "Exemple",
+      "items": [
+        {
+          "type": "doc",
+          "id": "version-4.0.0/installation"
+        }
+      ]
+    }
+  ]
+}
