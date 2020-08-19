@@ -15,7 +15,7 @@ import _isMap from "lodash-ts/isMap";
 import _intersection from "lodash-ts/intersection";
 import _isWeakMap from "lodash-ts/isWeakMap";
 /*
-  todo: REPLACE THIS SHIT. @nools/lodash-port
+  todo: REPLACE THIS. @nools/lodash-port
   USE: javascript
 */
 export const isArray = _isArray;

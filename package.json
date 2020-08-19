@@ -8,11 +8,9 @@
 		"packages/*"
 	],
 	"scripts": {
-		"test": "mocha -R dot --require should ./tests/**.test.js --max-old-space-size=4096 --harmony --check-leaks",
-		"converage": "istanbul cover -hook-run-in-content node_modules/mocha/bin/_mocha --require should ./tests/**.test.js --max-old-space-size=4096 --harmony --check-leaks",
-		"dist": "gulp && npm publish ./dist/",
-		"build": "gulp",
-		"karma": "karma start ./tests/karma.unit.js",
+		"build": "yarn build-nools && yarn build-parser",
+		"build-nools": "cd ./packages/nools && yarn build",
+		"build-parser": "cd ./packages/parser && yarn build",
 		"lint-fix": "eslint */**/src/**/*.{js,ts,tsx} --quiet --fix",
 		"lint": "eslint */**/src/**/*.{js,ts,tsx}",
 		"architecture": "madge ./packages/nools/lib -i ./architecture/deps.png",

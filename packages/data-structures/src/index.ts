@@ -5,7 +5,8 @@ export * from "./andersson-tree";
 export * from "./red-black-tree";
 
 /*
-  todo: REPLACE THIS SHIT.
+  todo: REPLACE THIS.
   USE: https://github.com/trekhleb/javascript-algorithms
-  OR: ...
+  OR: I think it needs a more stable tested solution and an abstraction
+  for replacement without modifying the main solution.
 */
