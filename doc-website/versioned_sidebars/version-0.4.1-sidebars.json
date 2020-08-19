@@ -1,0 +1,15 @@
+{
+  "version-0.4.1/docs": {
+    "Installation": ["version-0.4.1/installation"],
+    "Flow": ["version-0.4.1/flow"],
+    "Facts": ["version-0.4.1/facts"],
+    "Defining rules": ["version-0.4.1/rule-structure", "version-0.4.1/emitting-custom-events"],
+    "Agenda Groups": ["version-0.4.1/agenda-groups"],
+    "Session": ["version-0.4.1/working-with-a-session"],
+    "Conflict Resolution": ["version-0.4.1/conflict-resolution"],
+    "Disposing": ["version-0.4.1/disposing"],
+    "Compilation": ["version-0.4.1/compilation"],
+    "Examples": ["version-0.4.1/examples"],
+    "Architecture": ["version-0.4.1/architecture"]
+  }
+}

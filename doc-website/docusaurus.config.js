@@ -18,9 +18,9 @@ module.exports = {
           path: "docs",
           // It is recommended to set document id as docs home page (`docs/` path).
           homePageId: "flow",
-          sidebarPath: require.resolve("./sidebars.js"),
+          //sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
-          editUrl: "https://github.com/facebook/docusaurus/edit/master/website/",
+          editUrl: "https://github.com/nikitait/nools-ts/edit/master/doc-website/",
           remarkPlugins: [require("./src/plugins/remark-npm2yarn")],
           // disableVersioning: false,
         },
@@ -46,7 +46,7 @@ module.exports = {
         include: ["**/*.md"],
         sidebarPath: require.resolve("./sidebarsRes.js"),
         // Please change this to your repo.
-        editUrl: "https://github.com/facebook/docusaurus/edit/master/website/",
+        editUrl: "https://github.com/nikitait/nools-ts/edit/master/doc-website/",
         remarkPlugins: [require("./src/plugins/remark-npm2yarn")],
         disableVersioning: true,
       },

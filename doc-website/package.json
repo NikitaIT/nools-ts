@@ -8,7 +8,8 @@
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
-    "serve": "docusaurus serve"
+    "serve": "docusaurus serve",
+    "windows-deploy": "cmd /C \"set \"GIT_USER=nikitait\" && yarn deploy\""
   },
   "dependencies": {
     "@docusaurus/core": "^2.0.0-alpha.61",

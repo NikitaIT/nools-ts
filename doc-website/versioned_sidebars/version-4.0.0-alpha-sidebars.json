@@ -1,14 +1,15 @@
 {
-  "version-4.0.0-alpha/docs": [
-    {
-      "type": "category",
-      "label": "Exemple",
-      "items": [
-        {
-          "type": "doc",
-          "id": "version-4.0.0-alpha/installation"
-        }
-      ]
-    }
-  ]
+  "version-4.0.0-alpha/docs": {
+    "Installation": ["version-4.0.0-alpha/installation"],
+    "Flow": ["version-4.0.0-alpha/flow"],
+    "Facts": ["version-4.0.0-alpha/facts"],
+    "Defining rules": ["version-4.0.0-alpha/rule-structure", "version-4.0.0-alpha/emitting-custom-events"],
+    "Agenda Groups": ["version-4.0.0-alpha/agenda-groups"],
+    "Session": ["version-4.0.0-alpha/working-with-a-session"],
+    "Conflict Resolution": ["version-4.0.0-alpha/conflict-resolution"],
+    "Disposing": ["version-4.0.0-alpha/disposing"],
+    "Compilation": ["version-4.0.0-alpha/compilation"],
+    "Examples": ["version-4.0.0-alpha/examples"],
+    "Architecture": ["version-4.0.0-alpha/architecture"]
+  }
 }

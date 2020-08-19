@@ -21,7 +21,7 @@ npm i nools-ts
 
 - Clone source from Github, or download source code.
 ```bash
-$ git clone git@github.com:taoqf/nools-ts.git
+$ git clone git@github.com:nikitait/nools-ts.git
 ```
 - Switch to branch functional
 ```bash
@@ -1966,10 +1966,10 @@ session3.match().then(function () {
 License
 -------
 
-MIT <https://github.com/taoqf/nools-ts/blob/master/LICENSE>
+MIT <https://github.com/nikitait/nools-ts/blob/master/LICENSE>
 
 Meta
 ----
 
-* Code: `git clone git@github.com:taoqf/nools-ts.git`
-* Code: `git clone https://github.com/taoqf/nools-ts.git`
+* Code: `git clone git@github.com:nikitait/nools-ts.git`
+* Code: `git clone https://github.com/nikitait/nools-ts.git`
